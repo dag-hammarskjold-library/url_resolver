@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<title>{% block title %}{% endblock %}</title>
+
+<div id="exTab2" class="container"> 
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a href="#document" data-toggle="tab">Document</a>
+        </li>
+        <li><a href="#metadata" data-toggle="tab">Metadata</a></li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane active" id="document">
+            {% if context.EN %}
+            <button class='lang btn btn-info' id='en' value='{{ context.EN }}'>English</button> 
+            {% else %}
+            <button class='lang btn btn-info' id='en' disabled>English;</button> 
+            {% endif %}
+            {% if context.ES %}
+            <button class='lang btn btn-info' id='es' value='{{ context.ES }}'>Español</button> 
+            {% else %}
+            <button class='lang btn btn-info' id='es' disabled>Español;</button> 
+            {% endif %}
+            {% if context.FR %}
+            <button class='lang btn btn-info' id='fr' value='{{ context.FR }}'>Français</button> 
+            {% else %}
+            <button class='lang btn btn-info' id='fr' disabled>Français;</button> 
+            {% endif %}
+            {% if context.DE %}
+            <button class='lang btn btn-info' id='de' value='{{ context.DE }}'>Deutsch</button> 
+            {% else %}
+            <button class='lang btn btn-info' id='de' disabled>Deutsch;</button> 
+            {% endif %}
+            {% if context.RU %}
+            <button class='lang btn btn-info' id='ru' value='{{ context.RU }}'>Русский</button> 
+            {% else %}
+            <button class='lang btn btn-info' id='ru' disabled>Русский;</button> 
+            {% endif %}
+            {% if context.AR %}
+            <button class='lang btn btn-info' id='ar' value='{{ context.AR }}'>العربية</button> 
+            {% else %}
+            <button class='lang btn btn-info' id='ar' disabled>العربية;</button> 
+            {% endif %}
+            {% if context.ZH %}
+            <button class='lang btn btn-info' id='zh' value='{{ context.ZH }}'>中文</button>
+            {% else %}
+            <button class='lang btn btn-info' id='zh' disabled>中文;</button>
+            {% endif %}
+            <iframe id='document' src="{{ context.EN }}" width="80%"" height="1200px"></iframe>
+        </div>
+        <div class="tab-pane" id="metadata">
+            <h3>Metadata</h3>
+            <!-- <iframe src="{{ context.metadata }}" id='metadata' width="80%"" height="1200px"></iframe> -->
+        </div>
+    </div>   
+</div>
+    
+ 
+
+
+{% endblock %}
