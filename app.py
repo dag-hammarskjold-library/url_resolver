@@ -108,6 +108,12 @@ def _get_record_id(search_string):
     _set_symbol_cache(search_string, rec_id)
     return rec_id
 
+def _get_marc_metadata(record_id):
+    # resp = req.urlopen(base_url + '/record/{}'.format(record_id) + '/export/xm', context=context)
+    # marc_fp = BytesIO(resp.read())
+    content = None
+    return content
+
 def _check_symbol_cache(search_string):
     document_id = sc.get(search_string)
     if document_id:
