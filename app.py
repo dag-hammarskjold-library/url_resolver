@@ -2,6 +2,7 @@
 from flask import Flask, request
 app = Flask(__name__)
 
+from .symbol_cache import SymbolCache
 from bs4 import BeautifulSoup
 from collections import defaultdict
 from flask import jsonify, render_template, abort
@@ -20,6 +21,7 @@ logger = getLogger(__name__)
 context = ssl._create_unverified_context()
 base_url = 'https://digitallibrary.un.org'
 ns = '{http://www.loc.gov/MARC21/slim}'
+sc = SymbolCache()
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -77,6 +79,10 @@ def _get_marc_metadata(record_id):
     return content
 
 def _get_record_id(search_string):
+    document_id = _check_symbol_cache(search_string)
+    if document_id:
+        return int(document_id)
+
     path = '/search'
     query = "ln=en&p={}&c=Resource+Type&c=UN+Bodies&fti=0&so=d&rg=10&sc=0&of=xm".format(search_string)
     resp = req.urlopen(
@@ -99,5 +105,16 @@ def _get_record_id(search_string):
         logger.error("Caught Exception in {}, {}".format(__name__, e))
         abort(404)
 
+    _set_symbol_cache(search_string, rec_id)
     return rec_id
+
+def _check_symbol_cache(search_string):
+    document_id = sc.get(search_string)
+    if document_id:
+        return document_id
+    else:
+        return None
+
+def _set_symbol_cache(search_string, document_id):
+    sc.set(search_string, document_id)
 
