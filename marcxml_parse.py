@@ -41,11 +41,11 @@ class MARCXmlParse:
         tree = ET.parse(f_obj)
         return tree.getroot()
 
-    def _find_text(self, tag):
+    def _find_text(self, tag, code='a'):
         text = []
         df = self.root.findall('.//{{{0}}}datafield[@tag="{1}"]'.format(MARC_XML_NS, tag))
         for elem in df:
-            data = elem.find('.//{{{0}}}subfield[@code="a"]'.format(MARC_XML_NS))
+            data = elem.find('.//{{{0}}}subfield[@code="{1}"]'.format(MARC_XML_NS, code))
             text.append(data.text)
         return text
 
@@ -59,9 +59,10 @@ class MARCXmlParse:
 
     def title(self):
         try:
-            df = self.root.find('.//{{{0}}}datafield[@tag="239"]'.format(MARC_XML_NS))
+            df = self.root.find('.//{{{0}}}datafield[@tag="245"]'.format(MARC_XML_NS))
             title = df.find('.//{{{0}}}subfield[@code="a"]'.format(MARC_XML_NS))
-            return title.text
+            subtitle = df.find('.//{{{0}}}subfield[@code="b"]'.format(MARC_XML_NS))
+            return "{} {}".format(title.text, subtitle.text)
         except AttributeError as ex:
             return None
 
@@ -77,11 +78,31 @@ class MARCXmlParse:
         occur with some frequency in OCLC and RLIN records.
         """
         subjects = []
-        for tag in ['600', '610', '611', '630', '648', '650',
-            '651', '653', '654', '655', '656', '657', '658', '662', '690',
-            '691', '696', '697', '698', '699']:
-            subjects = self._find_text(tag)
-        return subjects
+        try:
+            df = self.root.findall('.//{{{0}}}datafield[@tag="650"]'.format(MARC_XML_NS))
+            for sf in df:
+                subj = sf.find('.//{{{0}}}subfield[@code="a"]'.format(MARC_XML_NS))
+                subjects.append(subj.text)
+            return subjects
+        except AttributeError as ex:
+            return None
+
+    def cross_reference(self):
+        references = []
+        text = ''
+        # import pdb
+        # pdb.set_trace()
+        try:
+            df = self.root.findall('.//{{{0}}}datafield[@tag="991"]'.format(MARC_XML_NS))
+            for elem in df:
+                for sf in elem.getchildren():
+                    if hasattr(sf, 'text'):
+                        text += '| {0} '.format(sf.text)
+                references.append(text)
+                text = ''
+            return references
+        except AttributeError as ex:
+            return None
 
     def addedentries(self):
         """

@@ -52,11 +52,29 @@
             <h3>Metadata</h3>
             <p>Title: {{ context.metadata.title }}</p>
             <p>Document Symbol: {{ context.metadata.symbol}}</p>
+            {% if context.metadata.subjects %}
+            Subjects: 
             <ul>
                 {% for elem in context.metadata.subjects %}
-                <li>Subject: {{ elem }}</li>
+                <li>{{ elem }}</li>
                 {% endfor %}
             </ul>
+            {% endif %}
+            {% if context.metadata.addedentries %}
+            <ul>
+                {% for elem in context.metadata.addedentries %}
+                <li> {{ elem }} </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% if context.metadata.references %}
+            Cross References: 
+            <ul>
+                {% for elem in context.metadata.references %}
+                <li> {{ elem }} </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
         </div>
     </div>   
 </div>

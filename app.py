@@ -75,14 +75,13 @@ def _get_pdf(record_id):
    
 def _get_marc_metadata(record_id):
     url = base_url + '/record/{}'.format(record_id) + '/export/xm'
-    # import pdb
-    # pdb.set_trace()
     parser = MARCXmlParse(url)
     ctx = {
         'title': parser.title(),
         'symbol': parser.symbol(),
         'subjects': parser.subjects(),
-        'addedentries': parser.addedentries()
+        'addedentries': parser.addedentries(),
+        'references': parser.cross_reference()
     }
     return ctx
 
