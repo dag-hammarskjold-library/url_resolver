@@ -2,6 +2,7 @@
 from flask import Flask, request
 app = Flask(__name__)
 
+from .marcxml_parse import MARCXmlParse
 from .symbol_cache import SymbolCache
 from bs4 import BeautifulSoup
 from collections import defaultdict
@@ -46,11 +47,11 @@ def index(search_string):
     search_string = quote_plus(search_string)
     rec_id = _get_record_id(search_string)
     links = _get_pdf(rec_id)
-    marc = _get_marc_metadata(rec_id)
+    marc_dict = _get_marc_metadata(rec_id)
 
     langs = ['EN', 'ES', 'FR', 'DE', 'RU', 'AR', 'ZH']
     ctx = {}
-    ctx['metadata'] = marc
+    ctx['metadata'] = marc_dict
     for link in links:
         for lang in langs:
             if re.search(lang, link):
@@ -73,10 +74,17 @@ def _get_pdf(record_id):
     return links
    
 def _get_marc_metadata(record_id):
-    resp = req.urlopen(base_url + '/record/{}'.format(record_id) + '/export/xm', context=context)
-    buff = resp.read()
-    content = None
-    return content
+    url = base_url + '/record/{}'.format(record_id) + '/export/xm'
+    # import pdb
+    # pdb.set_trace()
+    parser = MARCXmlParse(url)
+    ctx = {
+        'title': parser.title(),
+        'symbol': parser.symbol(),
+        'subjects': parser.subjects(),
+        'addedentries': parser.addedentries()
+    }
+    return ctx
 
 def _get_record_id(search_string):
     document_id = _check_symbol_cache(search_string)
@@ -107,12 +115,6 @@ def _get_record_id(search_string):
 
     _set_symbol_cache(search_string, rec_id)
     return rec_id
-
-def _get_marc_metadata(record_id):
-    # resp = req.urlopen(base_url + '/record/{}'.format(record_id) + '/export/xm', context=context)
-    # marc_fp = BytesIO(resp.read())
-    content = None
-    return content
 
 def _check_symbol_cache(search_string):
     document_id = sc.get(search_string)

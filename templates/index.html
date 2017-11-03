@@ -50,7 +50,13 @@
         </div>
         <div class="tab-pane" id="metadata">
             <h3>Metadata</h3>
-            <!-- <iframe src="{{ context.metadata }}" id='metadata' width="80%"" height="1200px"></iframe> -->
+            <p>Title: {{ context.metadata.title }}</p>
+            <p>Document Symbol: {{ context.metadata.symbol}}</p>
+            <ul>
+                {% for elem in context.metadata.subjects %}
+                <li>Subject: {{ elem }}</li>
+                {% endfor %}
+            </ul>
         </div>
     </div>   
 </div>
