@@ -78,10 +78,14 @@ def _get_marc_metadata(record_id):
     parser = MARCXmlParse(url)
     ctx = {
         'title': parser.title(),
-        'symbol': parser.symbol(),
+        'author': parser.author(),
+            # 'uniformtitle': parser.uniformtitle(),
         'subjects': parser.subjects(),
-        'addedentries': parser.addedentries(),
-        'references': parser.cross_reference()
+        'notes': parser.notes(),
+        'publisher': parser.publisher(),
+        'pubyear': parser.pubyear(),
+        'document_symbol': parser.document_symbol(),
+        'related_documents': parser.related_documents()
     }
     return ctx
 
@@ -91,7 +95,7 @@ def _get_record_id(search_string):
         return int(document_id)
 
     path = '/search'
-    query = "ln=en&p={}&c=Resource+Type&c=UN+Bodies&fti=0&so=d&rg=10&sc=0&of=xm".format(search_string)
+    query = "ln=en&p=\"{}\"&c=Resource+Type&c=UN+Bodies&fti=0&so=d&rg=10&sc=0&of=xm".format(search_string)
     resp = req.urlopen(
         base_url + path + '?' + query,
         context=context

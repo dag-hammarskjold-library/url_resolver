@@ -29,7 +29,7 @@
             {% if context.DE %}
             <button class='lang btn btn-info' id='de' value='{{ context.DE }}'>Deutsch</button> 
             {% else %}
-            <button class='lang btn btn-info' id='de' disabled>Deutsch;</button> 
+            <button class='lang btn btn-info' id='de' disabled>Other</button> 
             {% endif %}
             {% if context.RU %}
             <button class='lang btn btn-info' id='ru' value='{{ context.RU }}'>Русский</button> 
@@ -51,7 +51,13 @@
         <div class="tab-pane" id="metadata">
             <h3>Metadata</h3>
             <p>Title: {{ context.metadata.title }}</p>
-            <p>Document Symbol: {{ context.metadata.symbol}}</p>
+            <p>Document Symbol: {{ context.metadata.document_symbol.0 }}</p>
+            {% if context.metadata.author %}
+            <p> Author: {{ context.metadata.author }}</p>
+            {% endif %}
+            {% if context.metadata.pubyear %}
+            <p> Pubdate: {{ context.metadata.pubyear }}</p>
+            {% endif %}
             {% if context.metadata.subjects %}
             Subjects: 
             <ul>
@@ -60,21 +66,23 @@
                 {% endfor %}
             </ul>
             {% endif %}
-            {% if context.metadata.addedentries %}
+            {% if context.metadata.notes %}
+            Notes:
             <ul>
-                {% for elem in context.metadata.addedentries %}
-                <li> {{ elem }} </li>
+                {% for note in context.metadata.notes %}
+                <li> {{ note }} </li>
                 {% endfor %}
             </ul>
             {% endif %}
-            {% if context.metadata.references %}
-            Cross References: 
+            {% if context.metadata.related_documents %}
+            Related Documents:
             <ul>
-                {% for elem in context.metadata.references %}
-                <li> {{ elem }} </li>
+                {% for doc in context.metadata.related_documents %}
+                <li>{{ doc }}</li>
                 {% endfor %}
             </ul>
             {% endif %}
+           
         </div>
     </div>   
 </div>
