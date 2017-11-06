@@ -1,5 +1,4 @@
-## H2
-The Url  Resolver app
+## The Url  Resolver app
 
 **Setup**
 create a virtual environment on your local machine:
