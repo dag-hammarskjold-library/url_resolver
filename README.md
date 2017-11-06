@@ -2,8 +2,8 @@
 
 **Setup**
 create a virtual environment on your local machine:
-* virtualenv -p <path to python3 binary> <envname>
-* source <envname>
+* virtualenv -p path_to_python3_binary envname
+* source envname
 * pip install -r requirements.txt
 
 **Running locally**
