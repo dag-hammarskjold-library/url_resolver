@@ -3,6 +3,14 @@ from io import BytesIO
 from urllib import request
 import ssl
 from pymarc import marcxml
+import re
+from urllib import parse
+
+# FIXME want to import this from common module
+base_url = 'https://digitallibrary.un.org'
+path = '/search'
+
+subject_re = re.compile(r'^\d{7} unbis[nt] (.+)$')
 
 
 class PageNotFoundException(Exception):
@@ -52,7 +60,15 @@ class MARCXmlParse:
     #     return [elem.value() for elem in self.record.uniformtitle()]
         
     def subjects(self):
-        return [sub.value() for sub in self.record.subjects()]
+        subjs = {}
+        for sub in self.record.subjects():
+            print("Subject: {}".format(sub.value()))
+            m = subject_re.match(sub.value())
+            if m:
+                search_string = parse.quote_plus(m.group(1))
+                query = "f1=subject&as=1&sf=title&so=a&rm=&m1=p&p1={}&ln=en".format(search_string)
+                subjs[m.group(1)] = base_url + path + '?' + query
+        return subjs
 
     def notes(self):
         return [note.value() for note in self.record.notes()]
@@ -67,4 +83,10 @@ class MARCXmlParse:
         return self.record.document_symbol()
 
     def related_documents(self):
-        return self.record.related_documents()
+        docs = {}
+        for rel_doc in self.record.related_documents():
+            docs[rel_doc.value()] = '/symbol/{}'.format(rel_doc.value())
+        return docs
+
+
+    # def _generate_link(self, data)

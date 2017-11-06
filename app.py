@@ -17,7 +17,6 @@ import re
 import ssl
 import xml.etree.ElementTree as ET
 
-logger = getLogger(__name__)
 
 context = ssl._create_unverified_context()
 base_url = 'https://digitallibrary.un.org'
@@ -26,6 +25,7 @@ sc = SymbolCache()
 
 @app.errorhandler(404)
 def page_not_found(e):
+    app.logger.error(e)
     return render_template('404.html'), 404
 
 
@@ -45,6 +45,7 @@ def index(search_string):
     document symbols (search strings) are known and used by users of UNDL
     """
     search_string = quote_plus(search_string)
+    app.logger.info(search_string)
     rec_id = _get_record_id(search_string)
     links = _get_pdf(rec_id)
     marc_dict = _get_marc_metadata(rec_id)
@@ -61,6 +62,10 @@ def index(search_string):
 
 
 def _get_pdf(record_id):
+    '''
+    get the (badly formed) html of the page
+    get links to PDF docs
+    '''
     resp = req.urlopen(base_url + '/record/{}'.format(record_id), context=context)
     html = resp.read()
     soup = BeautifulSoup(html, 'html.parser')  
@@ -69,11 +74,15 @@ def _get_pdf(record_id):
         a = pdf.find_previous('a')
         link = a.get('href')
         links[link] = 1
-    logger.debug(links)
+    app.logger.debug(links)
 
     return links
    
 def _get_marc_metadata(record_id):
+    '''
+    use the xml format of the page
+    to nab metadata
+    '''
     url = base_url + '/record/{}'.format(record_id) + '/export/xm'
     parser = MARCXmlParse(url)
     ctx = {
@@ -90,36 +99,50 @@ def _get_marc_metadata(record_id):
     return ctx
 
 def _get_record_id(search_string):
+    '''
+    @args: search string
+    @returns: undl internal record id
+    @raises 404
+    '''
     document_id = _check_symbol_cache(search_string)
     if document_id:
+        app.logger.info("Using cached document id: {} ".format(document_id))
         return int(document_id)
 
     path = '/search'
-    query = "ln=en&p=\"{}\"&c=Resource+Type&c=UN+Bodies&fti=0&so=d&rg=10&sc=0&of=xm".format(search_string)
+    query = "ln=en&p=191__a:\"{}\"&c=Resource+Type&c=UN+Bodies&fti=0&so=d&rg=10&sc=0&of=xm".format(search_string)
+    app.logger.info("!! {}".format(search_string))
+    app.logger.info("$$ {}".format(query))
     resp = req.urlopen(
         base_url + path + '?' + query,
         context=context
     )
     if resp.status != 200:
+        app.logger.debug("query {}, gave status: {}".format(query, resp.status))
         abort(404)
     xml = resp.read()
     if not xml:
+        app.logger.debug("No XML for query: {}".format(query))
         abort(404)
     root = ET.fromstring(xml)
     elems = root.findall('.//{}controlfield[@tag="001"]'.format(ns))
     if elems == []:
-        logger.error("Could not find a record for {}".format(search_string))
+        app.logger.debug("Could not find a record for {}".format(search_string))
         abort(404)
     try:
         rec_id = elems[0].text
     except IndexError as e:
-        logger.error("Caught Exception in {}, {}".format(__name__, e))
+        app.logger.debug("Caught Exception in {}, {}".format(__name__, e))
         abort(404)
 
     _set_symbol_cache(search_string, rec_id)
     return rec_id
 
 def _check_symbol_cache(search_string):
+    '''
+    keeping record symbols in redis
+    to save retrieving xml twice
+    '''
     document_id = sc.get(search_string)
     if document_id:
         return document_id

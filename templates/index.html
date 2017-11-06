@@ -14,44 +14,44 @@
             {% if context.EN %}
             <button class='lang btn btn-info' id='en' value='{{ context.EN }}'>English</button> 
             {% else %}
-            <button class='lang btn btn-info' id='en' disabled>English;</button> 
+            <button class='lang btn btn-info' id='en' disabled>English</button> 
             {% endif %}
             {% if context.ES %}
             <button class='lang btn btn-info' id='es' value='{{ context.ES }}'>Español</button> 
             {% else %}
-            <button class='lang btn btn-info' id='es' disabled>Español;</button> 
+            <button class='lang btn btn-info' id='es' disabled>Español</button> 
             {% endif %}
             {% if context.FR %}
             <button class='lang btn btn-info' id='fr' value='{{ context.FR }}'>Français</button> 
             {% else %}
-            <button class='lang btn btn-info' id='fr' disabled>Français;</button> 
+            <button class='lang btn btn-info' id='fr' disabled>Français</button> 
             {% endif %}
             {% if context.DE %}
-            <button class='lang btn btn-info' id='de' value='{{ context.DE }}'>Deutsch</button> 
+            <button class='lang btn btn-info' id='de' value='{{ context.DE }}'>Other</button> 
             {% else %}
             <button class='lang btn btn-info' id='de' disabled>Other</button> 
             {% endif %}
             {% if context.RU %}
             <button class='lang btn btn-info' id='ru' value='{{ context.RU }}'>Русский</button> 
             {% else %}
-            <button class='lang btn btn-info' id='ru' disabled>Русский;</button> 
+            <button class='lang btn btn-info' id='ru' disabled>Русский</button> 
             {% endif %}
             {% if context.AR %}
             <button class='lang btn btn-info' id='ar' value='{{ context.AR }}'>العربية</button> 
             {% else %}
-            <button class='lang btn btn-info' id='ar' disabled>العربية;</button> 
+            <button class='lang btn btn-info' id='ar' disabled>العربية</button> 
             {% endif %}
             {% if context.ZH %}
             <button class='lang btn btn-info' id='zh' value='{{ context.ZH }}'>中文</button>
             {% else %}
-            <button class='lang btn btn-info' id='zh' disabled>中文;</button>
+            <button class='lang btn btn-info' id='zh' disabled>中文</button>
             {% endif %}
             <iframe id='document-frame' src="{{ context.EN }}" width="80%"" height="1200px"></iframe>
         </div>
         <div class="tab-pane" id="metadata">
             <h3>Metadata</h3>
             <p>Title: {{ context.metadata.title }}</p>
-            <p>Document Symbol: {{ context.metadata.document_symbol.0 }}</p>
+            <p>Document Symbol: {{ context.metadata.document_symbol }}</p>
             {% if context.metadata.author %}
             <p> Author: {{ context.metadata.author }}</p>
             {% endif %}
@@ -61,8 +61,8 @@
             {% if context.metadata.subjects %}
             Subjects: 
             <ul>
-                {% for elem in context.metadata.subjects %}
-                <li>{{ elem }}</li>
+                {% for k, v in context.metadata.subjects.items() %}
+                <li><a target="_blank" href="{{v}}">{{k}}</a></li>
                 {% endfor %}
             </ul>
             {% endif %}
@@ -77,8 +77,8 @@
             {% if context.metadata.related_documents %}
             Related Documents:
             <ul>
-                {% for doc in context.metadata.related_documents %}
-                <li>{{ doc }}</li>
+                {% for doc, link in context.metadata.related_documents.items() %}
+                <li><a href="{{link}}">{{ doc }} </a></li>
                 {% endfor %}
             </ul>
             {% endif %}
