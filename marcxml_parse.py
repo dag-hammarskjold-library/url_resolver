@@ -8,7 +8,7 @@ import ssl
 import xml.etree.ElementTree as ET
 
 
-subject_re = re.compile(r'^\d{7} unbis[nt] (.+)$')
+subject_re = re.compile(r'^\d{7} (?:unbis[nt])* (.+)$')
 reldoc_re = re.compile(r'^([a-zA-Z0-9\/]+)(\(\d{4}\))$')
 
 
@@ -54,6 +54,7 @@ class MARCXmlParse:
                 search_string = parse.quote_plus(m.group(1))
                 query = "f1=subject&as=1&sf=title&so=a&rm=&m1=p&p1={}&ln=en".format(search_string)
                 subjs[m.group(1)] = base_url + path + '?' + query
+        print(subjs)
         return subjs
 
     def notes(self):
