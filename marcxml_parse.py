@@ -1,14 +1,12 @@
-import xml.etree.ElementTree as ET
+from .config import base_url, path
 from io import BytesIO
-from urllib import request
-import ssl
 from pymarc import marcxml
-import re
 from urllib import parse
+from urllib import request
+import re
+import ssl
+import xml.etree.ElementTree as ET
 
-# FIXME want to import this from common module
-base_url = 'https://digitallibrary.un.org'
-path = '/search'
 
 subject_re = re.compile(r'^\d{7} unbis[nt] (.+)$')
 reldoc_re = re.compile(r'^([a-zA-Z0-9\/]+)(\(\d{4}\))$')
@@ -20,27 +18,18 @@ class PageNotFoundException(Exception):
 
 class MARCXmlParse:
     '''
-        # FIXME -- this is NOT effecient
         given a url, e.g.
             https://digitallibrary.un.org/record/696939/export/xm
-        get the xml via urllib request
-        save the xml to a BytesIO object
+        parse the xml via pymarc.parse_xml_to_array
         use pymarc to pull out fields:  
             author
-            leader
-            location
             notes
-            physicaldescription
-            pos
             publisher
             pubyear
-            series
             subjects
             title
-            for sub in rec.subjects():
-                m = marc_re.match(str(sub))
-                if m:
-                    print(m.group(1))
+            document symbol
+            related documents
     '''
     def __init__(self, url):
         resp = request.urlopen(url, context=ssl._create_unverified_context())
@@ -92,6 +81,3 @@ class MARCXmlParse:
 
     def summary(self):
         return self.record.summary()
-
-
-    # def _generate_link(self, data)

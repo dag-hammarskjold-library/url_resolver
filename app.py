@@ -4,6 +4,7 @@ app = Flask(__name__)
 
 from .marcxml_parse import MARCXmlParse
 from .symbol_cache import SymbolCache
+from .config import base_url, ns
 from bs4 import BeautifulSoup
 from collections import defaultdict
 from flask import jsonify, render_template, abort
@@ -19,8 +20,6 @@ import xml.etree.ElementTree as ET
 
 
 context = ssl._create_unverified_context()
-base_url = 'https://digitallibrary.un.org'
-ns = '{http://www.loc.gov/MARC21/slim}'
 sc = SymbolCache()
 
 @app.errorhandler(404)
