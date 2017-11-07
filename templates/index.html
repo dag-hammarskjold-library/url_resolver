@@ -49,40 +49,53 @@
             <iframe id='document-frame' src="{{ context.EN }}" width="80%"" height="1200px"></iframe>
         </div>
         <div class="tab-pane" id="metadata">
-            <h3>Metadata</h3>
-            <p>Title: {{ context.metadata.title }}</p>
-            <p>Document Symbol: {{ context.metadata.document_symbol }}</p>
+            <h2>Metadata</h2>
+            <p><b>Title:</b> {{ context.metadata.title }}</p>
+            <p><b>Document Symbol:</b> {{ context.metadata.document_symbol }}</p>
+            {% if context.metadata.title_statement %}
+                <p><b>Title Statement:</b> {{ context.metadata.title_statement.0 }}</p>
+            {% endif %}
             {% if context.metadata.author %}
-            <p> Author: {{ context.metadata.author }}</p>
+                <p> <b>Author:</b> {{ context.metadata.author }}</p>
             {% endif %}
             {% if context.metadata.pubyear %}
-            <p> Pubdate: {{ context.metadata.pubyear }}</p>
+                <p> <b>Pubdate:</b> {{ context.metadata.pubyear }}</p>
             {% endif %}
+            {% if context.metadata.summary %}
+                <p> <b>Summary:</b> {{ context.metadata.summary }}</p>
+            {% endif %}
+            <div id="accordian">
             {% if context.metadata.subjects %}
-            Subjects: 
-            <ul>
-                {% for k, v in context.metadata.subjects.items() %}
-                <li><a target="_blank" href="{{v}}">{{k}}</a></li>
-                {% endfor %}
-            </ul>
+                <h5>Subjects:</h5>
+                <div>
+                    <ul>
+                        {% for k, v in context.metadata.subjects.items() %}
+                        <li><a target="_blank" href="{{v}}">{{k}}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
             {% endif %}
             {% if context.metadata.notes %}
-            Notes:
-            <ul>
-                {% for note in context.metadata.notes %}
-                <li> {{ note }} </li>
-                {% endfor %}
-            </ul>
+                <h5>Notes:</h5>
+                <div>
+                <ul>
+                    {% for note in context.metadata.notes %}
+                    <li> {{ note }} </li>
+                    {% endfor %}
+                </ul>
+                </div>
             {% endif %}
             {% if context.metadata.related_documents %}
-            Related Documents:
-            <ul>
-                {% for doc, link in context.metadata.related_documents.items() %}
-                <li><a href="{{link}}">{{ doc }} </a></li>
-                {% endfor %}
-            </ul>
+                <h5>Related Documents:</h5>
+                <div>
+                <ul>
+                    {% for doc, link in context.metadata.related_documents.items() %}
+                    <li><a href="{{link}}">{{ doc }} </a></li>
+                    {% endfor %}
+                </ul>
+                </div>
             {% endif %}
-           
+            </div>        
         </div>
     </div>   
 </div>

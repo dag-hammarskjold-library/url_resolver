@@ -88,13 +88,13 @@ def _get_marc_metadata(record_id):
     ctx = {
         'title': parser.title(),
         'author': parser.author(),
-            # 'uniformtitle': parser.uniformtitle(),
         'subjects': parser.subjects(),
         'notes': parser.notes(),
         'publisher': parser.publisher(),
         'pubyear': parser.pubyear(),
         'document_symbol': parser.document_symbol(),
-        'related_documents': parser.related_documents()
+        'related_documents': parser.related_documents(),
+        'summary': parser.summary()
     }
     return ctx
 

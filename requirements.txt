@@ -21,6 +21,6 @@ jinja2-time==0.2.0
 lxml==4.1.0
 pep8-naming==0.4.1
 # pymarc==3.1.7
-install -e git+https://github.com/dag-hammarskjold-library/pymarc.git@b899cfd3067a69dec5e65dc05e8038db66d83d9c
+git+https://github.com/dag-hammarskjold-library/pymarc.git@dbe2c1fb31d35ead9eb674bbdf5e14753b04d3a9
 python-dateutil==2.6.1
 Werkzeug==0.12.2

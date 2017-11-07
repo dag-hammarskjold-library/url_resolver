@@ -11,6 +11,7 @@ base_url = 'https://digitallibrary.un.org'
 path = '/search'
 
 subject_re = re.compile(r'^\d{7} unbis[nt] (.+)$')
+reldoc_re = re.compile(r'^([a-zA-Z0-9\/]+)(\(\d{4}\))$')
 
 
 class PageNotFoundException(Exception):
@@ -36,7 +37,6 @@ class MARCXmlParse:
             series
             subjects
             title
-            uniformtitle
             for sub in rec.subjects():
                 m = marc_re.match(str(sub))
                 if m:
@@ -56,9 +56,6 @@ class MARCXmlParse:
     def title(self):
         return self.record.title()
 
-    # def uniformtitle(self):
-    #     return [elem.value() for elem in self.record.uniformtitle()]
-        
     def subjects(self):
         subjs = {}
         for sub in self.record.subjects():
@@ -85,8 +82,16 @@ class MARCXmlParse:
     def related_documents(self):
         docs = {}
         for rel_doc in self.record.related_documents():
-            docs[rel_doc.value()] = '/symbol/{}'.format(rel_doc.value())
+            m = reldoc_re.match(rel_doc.value())
+            if m:
+                rel_string = m.group(1) + '%20' + m.group(2)
+                docs[rel_doc.value()] = '/symbol/{}'.format(rel_string)
+            else:
+                docs[rel_doc.value()] = '/symbol/{}'.format(rel_doc.value())
         return docs
+
+    def summary(self):
+        return self.record.summary()
 
 
     # def _generate_link(self, data)

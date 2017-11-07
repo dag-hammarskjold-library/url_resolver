@@ -6,4 +6,7 @@ $( document ).ready(function(){
         var iframe = $('#document-frame');
         iframe.attr('src', link);
     });
+    $(function() {
+        $( "#accordion" ).accordion();
+    });
 });
