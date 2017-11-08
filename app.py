@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import Flask
-from .marcxml_parse import MARCXmlParse
-from .config import base_url, ns
+from url_resolver.marcxml_parse import MARCXmlParse
+from url_resolver.config import base_url, ns
 from flask import render_template, abort, redirect
 from urllib import request as req
 from urllib.parse import quote_plus
@@ -70,7 +70,8 @@ def _get_marc_metadata(record_id):
         'pubyear': parser.pubyear(),
         'document_symbol': parser.document_symbol(),
         'related_documents': parser.related_documents(),
-        'summary': parser.summary()
+        'summary': parser.summary(),
+        'agenda': parser.agenda()
     }
     return ctx
 

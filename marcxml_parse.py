@@ -86,3 +86,6 @@ class MARCXmlParse:
 
     def summary(self):
         return self.record.summary()
+
+    def agenda(self):
+        return self.record.agenda()
