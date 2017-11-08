@@ -1,39 +1,26 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, request
-app = Flask(__name__)
-
-from .marcxml_parse import MARCXmlParse
-from .symbol_cache import SymbolCache
-from .config import base_url, ns
-from bs4 import BeautifulSoup
-from collections import defaultdict
-from flask import jsonify, render_template, abort, redirect, url_for
-from io import BytesIO
-import json
-from logging import getLogger
-from lxml import etree
+from flask import Flask
+from url_resolver.marcxml_parse import MARCXmlParse
+from url_resolver.config import base_url, ns
+from flask import render_template, abort, redirect
 from urllib import request as req
-from urllib.parse import quote_plus, urljoin
-import re
+from urllib.parse import quote_plus
 import re
 import ssl
 import xml.etree.ElementTree as ET
 
-
+app = Flask(__name__)
 context = ssl._create_unverified_context()
-# sc = SymbolCache()
 
 @app.errorhandler(404)
 def page_not_found(e):
     app.logger.error(e)
     return render_template('404.html'), 404
 
-
 @app.route('/')
 def redirect_to_symbol():
     # pick a General Assembly resolution -- like A/RES/52/115
     return redirect('/symbol/A/RES/52/115')
-
 
 @app.route('/symbol', defaults={'path': ''})
 @app.route('/symbol/<path:search_string>')
@@ -53,37 +40,20 @@ def index(search_string):
     search_string = quote_plus(search_string)
     app.logger.info(search_string)
     rec_id = _get_record_id(search_string)
-    links = _get_pdf(rec_id)
+    urls = _get_pdf_urls(rec_id)
     marc_dict = _get_marc_metadata(rec_id)
 
     langs = ['EN', 'ES', 'FR', 'DE', 'RU', 'AR', 'ZH']
     ctx = {}
     ctx['metadata'] = marc_dict
-    for link in links:
+    for url in urls:
         for lang in langs:
-            if re.search('-{}\.pdf'.format(lang), link):
-                ctx[lang] = base_url + link
+            if re.search('-{}\.pdf'.format(lang), url):
+                ctx[lang] = url
 
     return render_template('index.html', context=ctx)
 
 
-def _get_pdf(record_id):
-    '''
-    get the (badly formed) html of the page
-    get links to PDF docs
-    '''
-    resp = req.urlopen(base_url + '/record/{}'.format(record_id), context=context)
-    html = resp.read()
-    soup = BeautifulSoup(html, 'html.parser')  
-    links = defaultdict(int)
-    for pdf in soup.find_all(string=re.compile('PDF')):
-        a = pdf.find_previous('a')
-        link = a.get('href')
-        links[link] = 1
-    app.logger.debug(links)
-
-    return links
-   
 def _get_marc_metadata(record_id):
     '''
     use the xml format of the page
@@ -100,7 +70,8 @@ def _get_marc_metadata(record_id):
         'pubyear': parser.pubyear(),
         'document_symbol': parser.document_symbol(),
         'related_documents': parser.related_documents(),
-        'summary': parser.summary()
+        'summary': parser.summary(),
+        'agenda': parser.agenda()
     }
     return ctx
 
@@ -116,18 +87,9 @@ def _get_record_id(search_string):
     query = "ln=en&p=191__a:\"{}\"&c=Resource+Type&c=UN+Bodies&fti=0&so=d&rg=10&sc=0&of=xm".format(search_string)
     app.logger.info("!! {}".format(search_string))
     app.logger.info("$$ {}".format(query))
-    resp = req.urlopen(
-        base_url + path + '?' + query,
-        context=context
-    )
-    if resp.status != 200:
-        app.logger.debug("query {}, gave status: {}".format(query, resp.status))
-        abort(404)
-    xml = resp.read()
-    if not xml:
-        app.logger.debug("No XML for query: {}".format(query))
-        abort(404)
-    root = ET.fromstring(xml)
+
+    url_pattern = path + '?' + query
+    root = _fetch_xml_root(url_pattern, search_string)
     elems = root.findall('.//{}controlfield[@tag="001"]'.format(ns))
     if elems == []:
         app.logger.debug("Could not find a record for {}".format(search_string))
@@ -138,20 +100,34 @@ def _get_record_id(search_string):
         app.logger.debug("Caught Exception in {}, {}".format(__name__, e))
         abort(404)
 
-    # _set_symbol_cache(search_string, rec_id)
     return rec_id
 
-# def _check_symbol_cache(search_string):
-#     '''
-#     keeping record symbols in redis
-#     to save retrieving xml twice
-#     '''
-#     document_id = sc.get(search_string)
-#     if document_id:
-#         return document_id
-#     else:
-#         return None
 
-# def _set_symbol_cache(search_string, document_id):
-#     sc.set(search_string, document_id)
+def _get_pdf_urls(record_id):
+    urls = []
+    root = _fetch_xml_root('/record/{}/?ln=en&of=xm', record_id)
+    elems = root.findall('.//{0}datafield[@tag="856"]/{0}subfield[@code="u"]'.format(ns))
+    urls = []
+    if elems == []:
+        app.logger.debug("Could not find a record for {}".format(record_id))
+        abort(404)
+    for elem in elems:
+        try:
+            urls.append(elem.text)
+        except Exception as e:
+            app.logger.error("Caught exception getting pdf urls: {}".format(e))
+            abort(404)
+    return urls
 
+def _fetch_xml_root(url_pattern, param):
+    url = base_url + url_pattern.format(param)
+    resp = req.urlopen(url, context=ssl._create_unverified_context())
+    if resp.status != 200:
+        app.logger.debug("query {}, gave status: {}".format(url_pattern, resp.status))
+        abort(404)
+    xml = resp.read()
+    if not xml:
+        app.logger.debug("No XML for query: {}".format(url_pattern))
+        abort(404)
+    root = ET.fromstring(xml)
+    return root
