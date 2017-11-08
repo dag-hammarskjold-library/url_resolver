@@ -7,8 +7,9 @@ from .symbol_cache import SymbolCache
 from .config import base_url, ns
 from bs4 import BeautifulSoup
 from collections import defaultdict
-from flask import jsonify, render_template, abort
+from flask import jsonify, render_template, abort, redirect, url_for
 from io import BytesIO
+import json
 from logging import getLogger
 from lxml import etree
 from urllib import request as req
@@ -26,6 +27,12 @@ context = ssl._create_unverified_context()
 def page_not_found(e):
     app.logger.error(e)
     return render_template('404.html'), 404
+
+
+@app.route('/')
+def redirect_to_symbol():
+    # pick a General Assembly resolution -- like A/RES/52/115
+    return redirect('/symbol/A/RES/52/115')
 
 
 @app.route('/symbol', defaults={'path': ''})
@@ -54,7 +61,7 @@ def index(search_string):
     ctx['metadata'] = marc_dict
     for link in links:
         for lang in langs:
-            if re.search(lang, link):
+            if re.search('-{}\.pdf'.format(lang), link):
                 ctx[lang] = base_url + link
 
     return render_template('index.html', context=ctx)
