@@ -20,7 +20,7 @@ import xml.etree.ElementTree as ET
 
 
 context = ssl._create_unverified_context()
-sc = SymbolCache()
+# sc = SymbolCache()
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -103,10 +103,7 @@ def _get_record_id(search_string):
     @returns: undl internal record id
     @raises 404
     '''
-    document_id = _check_symbol_cache(search_string)
-    if document_id:
-        app.logger.info("Using cached document id: {} ".format(document_id))
-        return int(document_id)
+    # https://github.com/dag-hammarskjold-library/pymarc/tree/dev
 
     path = '/search'
     query = "ln=en&p=191__a:\"{}\"&c=Resource+Type&c=UN+Bodies&fti=0&so=d&rg=10&sc=0&of=xm".format(search_string)
@@ -134,20 +131,20 @@ def _get_record_id(search_string):
         app.logger.debug("Caught Exception in {}, {}".format(__name__, e))
         abort(404)
 
-    _set_symbol_cache(search_string, rec_id)
+    # _set_symbol_cache(search_string, rec_id)
     return rec_id
 
-def _check_symbol_cache(search_string):
-    '''
-    keeping record symbols in redis
-    to save retrieving xml twice
-    '''
-    document_id = sc.get(search_string)
-    if document_id:
-        return document_id
-    else:
-        return None
+# def _check_symbol_cache(search_string):
+#     '''
+#     keeping record symbols in redis
+#     to save retrieving xml twice
+#     '''
+#     document_id = sc.get(search_string)
+#     if document_id:
+#         return document_id
+#     else:
+#         return None
 
-def _set_symbol_cache(search_string, document_id):
-    sc.set(search_string, document_id)
+# def _set_symbol_cache(search_string, document_id):
+#     sc.set(search_string, document_id)
 
