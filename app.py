@@ -13,7 +13,7 @@ base_url = 'https://digitallibrary.un.org'
 ns = '{http://www.loc.gov/MARC21/slim}'
 path = '/search'
 
-subject_re = re.compile(r'^\d{6,7}\s(?:unbis[nt])*\s*(.+)$')
+subject_re = re.compile(r'^\d{6,7}\s(?:unbis[nt])*\s*(.+)$|^([a-zA-Z ]+)\sunbis[nt]\s\d+$')
 reldoc_re = re.compile(r'^([a-zA-Z0-9\/]+)(\(\d{4}\))$')
 
 
@@ -56,9 +56,13 @@ class MARCXmlParse:
             app.logger.debug("Subject: {}".format(sub.value()))
             m = subject_re.match(sub.value())
             if m:
-                search_string = parse.quote_plus(m.group(1))
-                query = "f1=subject&as=1&sf=title&so=a&rm=&m1=p&p1={}&ln=en".format(search_string)
-                subjs[m.group(1)] = base_url + path + '?' + query
+                s = m.group(1)
+                if not m.group(1):
+                    s = m.group(2)
+                if s:
+                    search_string = parse.quote_plus(s)
+                    query = "f1=subject&as=1&sf=title&so=a&rm=&m1=p&p1={}&ln=en".format(search_string)
+                    subjs[s] = base_url + path + '?' + query
         app.logger.debug(subjs)
         return subjs
 
@@ -104,7 +108,7 @@ def page_not_found(e):
 @app.route('/')
 def redirect_to_symbol():
     # pick a General Assembly resolution -- like A/RES/52/115
-    return redirect('/symbol/A/RES/52/115')
+    return redirect('/symbol/A/RES/45/110')
 
 @app.route('/symbol', defaults={'path': ''})
 @app.route('/symbol/<path:search_string>')
