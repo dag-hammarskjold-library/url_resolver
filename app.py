@@ -2,30 +2,25 @@
 from flask import Flask
 from .marcxml_parse import MARCXmlParse
 from .config import base_url, ns
-from flask import render_template, abort, redirect, url_for
-from io import BytesIO
-from logging import getLogger
+from flask import render_template, abort, redirect
 from urllib import request as req
-from urllib.parse import quote_plus, urljoin
+from urllib.parse import quote_plus
 import re
 import ssl
 import xml.etree.ElementTree as ET
 
 app = Flask(__name__)
 context = ssl._create_unverified_context()
-# sc = SymbolCache()
 
 @app.errorhandler(404)
 def page_not_found(e):
     app.logger.error(e)
     return render_template('404.html'), 404
 
-
 @app.route('/')
 def redirect_to_symbol():
     # pick a General Assembly resolution -- like A/RES/52/115
     return redirect('/symbol/A/RES/52/115')
-
 
 @app.route('/symbol', defaults={'path': ''})
 @app.route('/symbol/<path:search_string>')
