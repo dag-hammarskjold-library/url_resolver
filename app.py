@@ -201,7 +201,7 @@ def _get_pdf_urls(record_id):
         abort(404)
     for elem in elems:
         try:
-            urls.append(elem.text)
+            urls.append(re.sub('http', 'https', elem.text))
         except Exception as e:
             app.logger.error("Caught exception getting pdf urls: {}".format(e))
             abort(404)
