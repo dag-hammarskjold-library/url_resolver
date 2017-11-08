@@ -1,5 +1,6 @@
 from .config import base_url, path
 from io import BytesIO
+from logging import getLogger
 from pymarc import marcxml
 from urllib import parse
 from urllib import request
@@ -7,8 +8,10 @@ import re
 import ssl
 import xml.etree.ElementTree as ET
 
+logger = getLogger(__name__)
 
-subject_re = re.compile(r'^\d{7} (?:unbis[nt])* (.+)$')
+
+subject_re = re.compile(r'^\d{6,7}\s(?:unbis[nt])*\s*(.+)$')
 reldoc_re = re.compile(r'^([a-zA-Z0-9\/]+)(\(\d{4}\))$')
 
 
@@ -48,13 +51,13 @@ class MARCXmlParse:
     def subjects(self):
         subjs = {}
         for sub in self.record.subjects():
-            print("Subject: {}".format(sub.value()))
+            logger.debug("Subject: {}".format(sub.value()))
             m = subject_re.match(sub.value())
             if m:
                 search_string = parse.quote_plus(m.group(1))
                 query = "f1=subject&as=1&sf=title&so=a&rm=&m1=p&p1={}&ln=en".format(search_string)
                 subjs[m.group(1)] = base_url + path + '?' + query
-        print(subjs)
+        logger.debug(subjs)
         return subjs
 
     def notes(self):
@@ -72,6 +75,7 @@ class MARCXmlParse:
     def related_documents(self):
         docs = {}
         for rel_doc in self.record.related_documents():
+            logger.debug("Related Doc: {}".format(rel_doc.value()))
             m = reldoc_re.match(rel_doc.value())
             if m:
                 rel_string = m.group(1) + '%20' + m.group(2)

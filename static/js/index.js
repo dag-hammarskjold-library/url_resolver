@@ -7,6 +7,8 @@ $( document ).ready(function(){
         iframe.attr('src', link);
     });
     $(function() {
-        $( "#accordion" ).accordion();
+        $( "#accordion" ).accordion({
+            heightStyle: "content"
+        });
     });
 });
