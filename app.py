@@ -26,7 +26,7 @@ class MARCXmlParse:
         given a url, e.g.
             https://digitallibrary.un.org/record/696939/export/xm
         parse the xml via pymarc.parse_xml_to_array
-        use pymarc to pull out fields:  
+        use pymarc to pull out fields:
             author
             notes
             publisher
@@ -39,13 +39,21 @@ class MARCXmlParse:
     def __init__(self, url):
         resp = req.urlopen(url, context=ssl._create_unverified_context())
         if resp.status != 200:
-            raise PageNotFoundException("Could not get data from {}".format(url)) 
+            raise PageNotFoundException("Could not get data from {}".format(url))
         self.xml_doc = BytesIO(resp.read())
         r = marcxml.parse_xml_to_array(self.xml_doc, False, 'NFC')
         self.record = r[0]
 
-    def authors(self):
-        return self.record.authors()
+    def author(self):
+        return self.record.author()
+
+    def authority_authors(self):
+        authors = []
+        for auth in self.record.authority_authors():
+            m = re.match(r'^\d+\s\w{2}\s(.+)$', auth.value())
+            if m:
+                authors.append(m.group(1))
+        return authors
 
     def title(self):
         return self.record.title()
@@ -110,15 +118,18 @@ class MARCXmlParse:
 app = Flask(__name__)
 context = ssl._create_unverified_context()
 
+
 @app.errorhandler(404)
 def page_not_found(e):
     app.logger.error(e)
     return render_template('404.html'), 404
 
+
 @app.route('/')
 def redirect_to_symbol():
     # pick a General Assembly resolution -- like A/RES/52/115
     return redirect('/symbol/A/RES/45/110')
+
 
 @app.route('/symbol', defaults={'path': ''})
 @app.route('/symbol/<path:search_string>')
@@ -161,7 +172,7 @@ def _get_marc_metadata(record_id):
     parser = MARCXmlParse(url)
     ctx = {
         'title': parser.title(),
-        'authors': parser.authors(),
+        'author': parser.author(),
         'subjects': parser.subjects(),
         'notes': parser.notes(),
         'publisher': parser.publisher(),
@@ -169,10 +180,12 @@ def _get_marc_metadata(record_id):
         'document_symbol': parser.document_symbol(),
         'related_documents': parser.related_documents(),
         'summary': parser.summary(),
-        'agenda': parser.agenda(), 
-        'title_statement': parser.title_statement()
+        'agenda': parser.agenda(),
+        'title_statement': parser.title_statement(),
+        'authority_authors': parser.authority_authors()
     }
     return ctx
+
 
 def _get_record_id(search_string):
     '''
@@ -217,6 +230,7 @@ def _get_pdf_urls(record_id):
             app.logger.error("Caught exception getting pdf urls: {}".format(e))
             abort(404)
     return urls
+
 
 def _fetch_xml_root(url_pattern, param):
     url = base_url + url_pattern.format(param)
