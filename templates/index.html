@@ -51,15 +51,11 @@
         <div class="tab-pane" id="metadata">
             <h3>Metadata</h3>
             <p><b>Title:</b> {{ context.metadata.title }}</p>
+            <p><b>Title Statement:</b> {{ context.metadata.title_statement.0 }}</p>
             <p><b>Document Symbol:</b> {{ context.metadata.document_symbol }}</p>
-            {% if context.metadata.title_statement %}
-                <p><b>Title Statement:</b> {{ context.metadata.title_statement.0 }}</p>
-            {% endif %}
-            {% if context.metadata.author %}
-                <p> <b>Author:</b> {{ context.metadata.author }}</p>
-            {% endif %}
-            {% if context.metadata.pubyear %}
-                <p> <b>Pubdate:</b> {{ context.metadata.pubyear }}</p>
+            <p> <b>Pubdate:</b> {{ context.metadata.pubyear }}</p>
+            {% if context.metadata.autors %}
+                <p> <b>Authors:</b> {{ context.metdata.authors }}</p>
             {% endif %}
             <div id="accordion">
                 <h5>Summary:</h5>

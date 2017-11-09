@@ -44,8 +44,8 @@ class MARCXmlParse:
         r = marcxml.parse_xml_to_array(self.xml_doc, False, 'NFC')
         self.record = r[0]
 
-    def author(self):
-        return self.record.author()
+    def authors(self):
+        return self.record.authors()
 
     def title(self):
         return self.record.title()
@@ -79,6 +79,13 @@ class MARCXmlParse:
         return self.record.document_symbol()
 
     def related_documents(self):
+        '''
+        tricky edge case:
+        S/RES/2049(2012) is a valid symbol
+        S/RES/2273(2016) is NOT a valie symbol
+        but "S/RES/2273 (2016)" is
+        We want to try both?
+        '''
         docs = {}
         for rel_doc in self.record.related_documents():
             app.logger.debug("Related Doc: {}".format(rel_doc.value()))
@@ -95,6 +102,9 @@ class MARCXmlParse:
 
     def agenda(self):
         return self.record.agenda()
+
+    def title_statement(self):
+        return [ts.value() for ts in self.record.title_statement()]
 
 
 app = Flask(__name__)
@@ -151,7 +161,7 @@ def _get_marc_metadata(record_id):
     parser = MARCXmlParse(url)
     ctx = {
         'title': parser.title(),
-        'author': parser.author(),
+        'authors': parser.authors(),
         'subjects': parser.subjects(),
         'notes': parser.notes(),
         'publisher': parser.publisher(),
@@ -159,7 +169,8 @@ def _get_marc_metadata(record_id):
         'document_symbol': parser.document_symbol(),
         'related_documents': parser.related_documents(),
         'summary': parser.summary(),
-        'agenda': parser.agenda()
+        'agenda': parser.agenda(), 
+        'title_statement': parser.title_statement()
     }
     return ctx
 
@@ -201,7 +212,7 @@ def _get_pdf_urls(record_id):
         abort(404)
     for elem in elems:
         try:
-            urls.append(re.sub('http', 'https', elem.text))
+            urls.append(re.sub('http://', 'https://', elem.text))
         except Exception as e:
             app.logger.error("Caught exception getting pdf urls: {}".format(e))
             abort(404)
