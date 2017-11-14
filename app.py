@@ -1,8 +1,10 @@
 from flask import Flask
-from flask import render_template, abort, redirect
+from flask import render_template, abort, redirect, request
+from pymarc.field import Field
 from urllib import request as req
 from urllib.parse import quote_plus
 from io import BytesIO
+import json
 import re
 import ssl
 import xml.etree.ElementTree as ET
@@ -50,9 +52,7 @@ class MARCXmlParse:
     def authority_authors(self):
         authors = []
         for auth in self.record.authority_authors():
-            m = re.match(r'^\d+\s\w{2}\s(.+)$', auth.value())
-            if m:
-                authors.append(m.group(1))
+            authors.append(Field.format_field(auth))
         return authors
 
     def title(self):
@@ -74,6 +74,9 @@ class MARCXmlParse:
         app.logger.debug(subjs)
         return subjs
 
+    def agenda(self):
+        return self.record.agenda()
+
     def notes(self):
         return [note.value() for note in self.record.notes()]
 
@@ -91,7 +94,7 @@ class MARCXmlParse:
         tricky edge case:
         S/RES/2049(2012) is a valid symbol
         S/RES/2273(2016) is NOT a valie symbol
-        but "S/RES/2273 (2016)" is
+        but "S/RES/2273 (2016)" is a valid symbol
         We want to try both?
         '''
         docs = {}
@@ -107,9 +110,6 @@ class MARCXmlParse:
 
     def summary(self):
         return self.record.summary()
-
-    def agenda(self):
-        return self.record.agenda()
 
     def title_statement(self):
         return [ts.value() for ts in self.record.title_statement()]
@@ -146,8 +146,6 @@ def index(search_string):
     record id's are internal to envivio.
     document symbols (search strings) are known and used by users of UNDL
     """
-    search_string = quote_plus(search_string)
-    app.logger.info(search_string)
     rec_id = _get_record_id(search_string)
     urls = _get_pdf_urls(rec_id)
     marc_dict = _get_marc_metadata(rec_id)
@@ -163,6 +161,17 @@ def index(search_string):
     return render_template('index.html', context=ctx)
 
 
+@app.route('/metadata', methods=['GET'])
+def link_metadata():
+    marc_json = {}
+    tag = request.args.get('tag', None)
+    doc_symbol = request.args.get('doc_symbol', '')
+    rec_id = _get_record_id(doc_symbol)
+    marc_dict = _get_marc_metadata(rec_id)
+    marc_json[doc_symbol] = marc_dict.get(tag, None)
+    return json.dumps(marc_json)
+
+
 def _get_marc_metadata(record_id):
     '''
     use the xml format of the page
@@ -171,18 +180,18 @@ def _get_marc_metadata(record_id):
     url = base_url + '/record/{}'.format(record_id) + '/export/xm'
     parser = MARCXmlParse(url)
     ctx = {
-        'title': parser.title(),
+        'agenda': parser.agenda(),
         'author': parser.author(),
-        'subjects': parser.subjects(),
+        'authority_authors': parser.authority_authors(),
+        'document_symbol': parser.document_symbol(),
         'notes': parser.notes(),
         'publisher': parser.publisher(),
         'pubyear': parser.pubyear(),
-        'document_symbol': parser.document_symbol(),
         'related_documents': parser.related_documents(),
+        'subjects': parser.subjects(),
         'summary': parser.summary(),
-        'agenda': parser.agenda(),
-        'title_statement': parser.title_statement(),
-        'authority_authors': parser.authority_authors()
+        'title': parser.title(),
+        'title_statement': parser.title_statement()
     }
     return ctx
 
@@ -194,7 +203,7 @@ def _get_record_id(search_string):
     @raises 404
     '''
     # https://github.com/dag-hammarskjold-library/pymarc/tree/dev
-
+    search_string = quote_plus(search_string)
     path = '/search'
     query = "ln=en&p=191__a:\"{}\"&c=Resource+Type&c=UN+Bodies&fti=0&so=d&rg=10&sc=0&of=xm".format(search_string)
     app.logger.info("!! {}".format(search_string))
