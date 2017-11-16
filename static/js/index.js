@@ -1,3 +1,19 @@
+// var clipboard = new Clipboard('.btn');
+
+// clipboard.on('success', function(e) {
+//     console.info('Action:', e.action);
+//     console.info('Text:', e.text);
+//     console.info('Trigger:', e.trigger);
+
+//     e.clearSelection();
+// });
+
+// clipboard.on('error', function(e) {
+//     console.error('Action:', e.action);
+//     console.error('Trigger:', e.trigger);
+// });
+
+
 /* event listeners for buttons */
 $( document ).ready(function(){
     $(".lang").on("click", function() {
@@ -80,25 +96,24 @@ $( document ).ready(function(){
 function get_metadata(field){
     var doc_symbol = $('p.document-symbol')[0].id;
     var data_modal = $('#link_modal');
-    $.ajax({
-        url: '/metadata?tag='+field+'&doc_symbol='+doc_symbol,
-        type: 'GET',
-        cache: false,
-        processData: false,
-        contentType: false,
-        success: function(data) {
-            console.log(data);
-            // var obj = jQuery.parseJSON(data);
-            // jsonData = JSON.stringify(data, undefined, 2);
-            document.getElementById("modal-body-data").innerHTML = data;
-            $('#link_modal').modal("show");
-        },
-        error: function(message) {
-            console.log(message);
-        }
-    });
-
-
+    var metadata_url = '/metadata?tag='+field+'&doc_symbol='+doc_symbol
+    document.getElementById("modal-body-data").innerHTML = metadata_url;
+    $('#link_modal').modal("show");
+    // $.ajax({
+    //     url: metadata_url,
+    //     type: 'GET',
+    //     cache: false,
+    //     processData: false,
+    //     contentType: false,
+    //     success: function(data) {
+    //         console.log(data);
+    //         // var obj = jQuery.parseJSON(data);
+    //         // jsonData = JSON.stringify(data, undefined, 2);
+    //         document.getElementById("modal-body-data").innerHTML = metadata_url;
+    //         $('#link_modal').modal("show");
+    //     },
+    //     error: function(message) {
+    //         console.log(message);
+    //     }
+    // });
 }
-
-
