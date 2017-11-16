@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en"> 
  <head>
      <meta charset="utf-8">
@@ -34,11 +34,16 @@
     <!-- Bootstrap JS -->
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"> </script>
 
+    <!-- Clipboard JS -->
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@1/dist/clipboard.min.js"></script>
     <script type=text/javascript>
         $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
     </script>
+
+    <!-- local index.js -->
     <script type="text/javascript" src="/static/js/index.js"> </script>
-    <script src="https://cdn.jsdelivr.net/npm/clipboard@1/dist/clipboard.min.js"></script>
+
+    <!-- hosted index.js -->
     <!-- <script type="text/javascript" src="https://s3.amazonaws.com/zappa-j2ith0vcq/index.js"></script> -->
  
  </head>

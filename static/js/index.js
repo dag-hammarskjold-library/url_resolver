@@ -14,6 +14,7 @@
 // });
 
 
+
 /* event listeners for buttons */
 $( document ).ready(function(){
     $(".lang").on("click", function() {
@@ -30,26 +31,6 @@ $( document ).ready(function(){
         });
     });
     
-    // var elements = document.querySelectorAll(
-    //     "#doc-title", 
-    //     "#agenda",
-    //     "#author",
-    //     "#authority_authors",
-    //     "#document_symbol",
-    //     "#notes",
-    //     "#publisher",
-    //     "#pubyear",
-    //     "#related_documents",
-    //     "#subjects",
-    //     "#summary",
-    //     "#title-statement"
-    // );
-    // for (var i = 0; i < elements.length; i++) {
-    //     elements[i].addEventListener("click", function() {
-    //         console.log("clicked " + elements[i]);
-    //     });
-    // };
-
     $("#title").on("click", function(){
         get_metadata('title');
     });
@@ -90,6 +71,12 @@ $( document ).ready(function(){
         get_metadata('authority_authors');
     });
 
+    $("#doc-lang-select").on("click", function(){
+        console.log("Clicked doc-lang-select button");
+        var href = $("iframe").attr('src');
+        get_document_url(href);
+    });
+
 });
 
 
@@ -97,23 +84,11 @@ function get_metadata(field){
     var doc_symbol = $('p.document-symbol')[0].id;
     var data_modal = $('#link_modal');
     var metadata_url = '/metadata?tag='+field+'&doc_symbol='+doc_symbol
-    document.getElementById("modal-body-data").innerHTML = metadata_url;
+    document.getElementById("modal-body-data").innerHTML = location.protocol +"//"+location.host+metadata_url;
     $('#link_modal').modal("show");
-    // $.ajax({
-    //     url: metadata_url,
-    //     type: 'GET',
-    //     cache: false,
-    //     processData: false,
-    //     contentType: false,
-    //     success: function(data) {
-    //         console.log(data);
-    //         // var obj = jQuery.parseJSON(data);
-    //         // jsonData = JSON.stringify(data, undefined, 2);
-    //         document.getElementById("modal-body-data").innerHTML = metadata_url;
-    //         $('#link_modal').modal("show");
-    //     },
-    //     error: function(message) {
-    //         console.log(message);
-    //     }
-    // });
+}
+
+function get_document_url(href){
+    document.getElementById("modal-document-data").innerHTML = href;
+    $('#document_modal').modal("show");
 }

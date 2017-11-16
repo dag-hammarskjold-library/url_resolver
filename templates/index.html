@@ -11,6 +11,7 @@
     </ul>
     <div class="tab-content">
         <div class="tab-pane active" id="document">
+        
             {% if context.EN %}
             <button class='lang btn btn-info' id='en' value='{{ context.EN }}'>English</button> 
             {% else %}
@@ -46,6 +47,7 @@
             {% else %}
             <button class='lang btn btn-info' id='zh' disabled>中文</button>
             {% endif %}
+            &nbsp;&nbsp;<button class="btn btn-warning" id="doc-lang-select" >Document Link</button>
             <iframe id='document-frame' src="{{ context.EN }}" width="80%"" height="1200px"></iframe>
         </div>
         <div class="tab-pane" id="metadata">
@@ -163,7 +165,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="modal-lable">Metadata JSON</h4>
+                <h4 class="modal-title" id="modal-lable">Metadata Link</h4>
             </div>
             <div class="modal-body">
                 <pre id="modal-body-data">
@@ -171,10 +173,30 @@
             </div>
             <div class="modal-footer">
                 <button type="btn" class="btn btn-default" data-dismiss="modal">Close</button>
-                <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+                <!-- <button type="button" class="btn btn-primary" data-clipboard-action="copy" data-clipboard-target="#bar">
+                    Copy
+                </button> -->
                 <!-- <button class="btn" data-clipboard-action="copy" data-clipboard-target="#bar">
                     Copy to clipboard
                 </button> -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="document_modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="modal-lable">Document Link</h4>
+            </div>
+            <div class="modal-body">
+                <pre id="modal-document-data">
+                </pre>
+            </div>
+            <div class="modal-footer">
+                <button type="btn" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
