@@ -114,6 +114,10 @@ class MARCXmlParse:
     def title_statement(self):
         return [ts.value() for ts in self.record.title_statement()]
 
+    def imprint(self):
+        for f in self.record.imprint():
+            return f.value()
+
 
 app = Flask(__name__)
 context = ssl._create_unverified_context()
@@ -163,16 +167,17 @@ def index(search_string):
 
 @app.route('/metadata', methods=['GET'])
 def link_metadata():
-    marc_json = {}
+    meta_json = {}
     tag = request.args.get('tag', None)
     doc_symbol = request.args.get('doc_symbol', '')
     rec_id = _get_record_id(doc_symbol)
-    marc_dict = _get_marc_metadata(rec_id)
-    marc_json[doc_symbol] = marc_dict.get(tag, None)
-    return json.dumps(marc_json)
+    marc_dict = _get_marc_metadata(rec_id, flat=True)
+    meta_json['document_symbol'] = doc_symbol
+    meta_json[tag] = marc_dict.get(tag, None)
+    return json.dumps(meta_json)
 
 
-def _get_marc_metadata(record_id):
+def _get_marc_metadata(record_id, flat=False):
     '''
     use the xml format of the page
     to nab metadata
@@ -184,6 +189,7 @@ def _get_marc_metadata(record_id):
         'author': parser.author(),
         'authority_authors': parser.authority_authors(),
         'document_symbol': parser.document_symbol(),
+        'imprint': parser.imprint(),
         'notes': parser.notes(),
         'publisher': parser.publisher(),
         'pubyear': parser.pubyear(),

@@ -51,17 +51,17 @@
         <div class="tab-pane" id="metadata">
             <h3>Metadata</h3>
             <p><b>Title:</b> {{ context.metadata.title }} <span class="pull-right">
-                <button class="btn-xs btn-warning" id="doc-title">link</button>
+                <button class="btn-xs btn-warning" id="title">link</button>
             </span></p>
             <p><b>Title Statement:</b> {{ context.metadata.title_statement.0 }}
                 <span class="pull-right">
-                    <button class="btn-xs btn-warning" id="title-statement">link</button>
+                    <button class="btn-xs btn-warning" id="title_statement">link</button>
                 </span>
             </p>
             <p class="document-symbol" id="{{ context.metadata.document_symbol }}">
                 <b>Document Symbol:</b> {{ context.metadata.document_symbol }}
                 <span class="pull-right">
-                    <button class="btn-xs btn-warning" id="document-symbol">link</button>
+                    <button class="btn-xs btn-warning" id="document_symbol">link</button>
                 </span>
             </p>
             <p><b>Pubdate:</b> {{ context.metadata.pubyear }}
@@ -79,6 +79,12 @@
                     <button class="btn-xs btn-warning" id="author">link</button>
                 </span>
             </p>
+
+            <p><b>Imprint:</b> {{ context.metadata.imprint }}
+                <span class="pull-right">
+                    <button class="btn-xs btn-warning" id="imprint">link</button>
+                </span>
+            </p>
             <div id="accordion">
                 <h5>Summary:</h5>
                 <div>
@@ -92,7 +98,7 @@
                 <div>
                     <p>{{ context.metadata.agenda }}
                           <span class="pull-right">
-                            <button class="btn-xs btn-warning" id="summary">link</button>
+                            <button class="btn-xs btn-warning" id="agenda">link</button>
                         </span>
                     </p>
                 </div>
@@ -104,7 +110,7 @@
                         <li><a target="_blank" href="{{v}}">{{k}}</a></li>
                         {% endfor %}
                         <span class="pull-right">
-                            <button class="btn-xs btn-warning" id="summary">link</button>
+                            <button class="btn-xs btn-warning" id="subjects">link</button>
                         </span>
                     </ul>
                 </div>
@@ -115,7 +121,7 @@
                         <li> {{ note }} </li>
                         {% endfor %}
                         <span class="pull-right">
-                            <button class="btn-xs btn-warning" id="summary">link</button>
+                            <button class="btn-xs btn-warning" id="notes">link</button>
                         </span>
                     </ul>
                 </div>  
@@ -126,7 +132,7 @@
                         <li><a href="{{link}}">{{ doc }} </a></li>
                         {% endfor %}
                         <span class="pull-right">
-                            <button class="btn-xs btn-warning" id="summary">link</button>
+                            <button class="btn-xs btn-warning" id="related_documents">link</button>
                         </span>
                     </ul>
                 </div>
@@ -137,10 +143,29 @@
                         <li>{{auth}}</li>
                         {% endfor %}
                         <span class="pull-right">
-                            <button class="btn-xs btn-warning" id="summary">link</button>
+                            <button class="btn-xs btn-warning" id="authority_authors">link</button>
                         </span>
                 </div>
             </div>        
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="link_modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="mySmallModalLabel">Modal title</h4>
+            </div>
+            <div class="modal-body">
+                <pre id="modal-body-data">
+                </pre>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
         </div>
     </div>
 </div>
