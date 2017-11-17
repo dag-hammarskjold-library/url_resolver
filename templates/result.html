@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- <div class="container">
+    <form action="symbol" method="GET">
+        <label for="document_symbol">Document Symbol: </label>
+        <input type="text" name="document_symbol" placeholder="{{context.search}}" maxlength="30" width="45%">
+    </form>
+</div> -->
+
+<div class="container"> 
+    <table class="table">
+        <thead>
+        {% for k in context.keys() %}
+            <th>{{k}}</th>
+        {%endfor%} 
+        </thead>
+        <tbody>
+        {% for v in context.values() %}
+        <td>{{v}}</td>
+        {% endfor %}  
+        </tbody>
+    </table>     
+</div>
+{% endblock %}

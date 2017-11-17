@@ -4,7 +4,7 @@ from pymarc.field import Field
 from urllib import request as req
 from urllib.parse import quote_plus
 from io import BytesIO
-import json
+# import json
 import re
 import ssl
 import xml.etree.ElementTree as ET
@@ -174,7 +174,8 @@ def link_metadata():
     marc_dict = _get_marc_metadata(rec_id, flat=True)
     meta_json['document_symbol'] = doc_symbol
     meta_json[tag] = marc_dict.get(tag, None)
-    return json.dumps(meta_json)
+    return render_template('result.html', context=meta_json)
+    # return json.dumps(meta_json)
 
 
 def _get_marc_metadata(record_id, flat=False):
