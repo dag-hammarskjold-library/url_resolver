@@ -5,6 +5,33 @@ $( document ).ready(function(){
         var link = $(this).val();
         var iframe = $('#document-frame');
         iframe.attr('src', link);
+
+        var lang = $(this).attr("id");
+        console.log(lang);
+
+        switch (lang){
+            case "en":
+                setDocumentButtonLang("english");
+                break;
+            case "fr":
+                setDocumentButtonLang('french');
+                break;
+            case "es":
+                setDocumentButtonLang('spanish');
+                break;
+            case 'de':
+                setDocumentButtonLang('german');
+                break;
+            case "ru":
+                setDocumentButtonLang("russian");
+                break;
+            case "ar":
+                setDocumentButtonLang("arabic");
+                break;
+            case "zh":
+                setDocumentButtonLang("chinese");
+                break;
+        }
     });
     
     $(function() {
@@ -57,14 +84,6 @@ $( document ).ready(function(){
         var href = $("iframe").attr('src');
         get_document_url(href);
     });
-
-    // $(".copyToClipboard").click( function(){
-    //     var clipboardText = "";
-    //     clipboardText = $("#modal-body-data").text();
-
-    //     copyTextToClipboard(clipboardText);
-    //     alert( "Copied to Clipboard" );
-    // });
 });
 
 
@@ -80,30 +99,33 @@ function get_document_url(href){
     $('#document_modal').modal("show");
 }
 
-
-// function setDocumentButtonLang(language){
-//     var lang = '';
-//     if (dictionary.hasOwnProperty(language)) {
-//         set_lang(dictionary[language]);
-//     }
-//     // var buttonLanguage = 
-//     $("#doc-lang-select").html()
-// }
-
-
-// function copyTextToClipboard(text) {
-//     var textArea = document.createElement("textarea");
-//     textArea.value = text;
-//     document.body.appendChild(textArea);
-//     textArea.select();
-//     try {
-//         var successful = document.execCommand("copy");
-//         var msg = successful ? 'successful' : 'unsuccessful';
-//         console.log('Copying text command was ' + msg);
-//     } catch (err) {
-//         console.log('Oops, unable to copy');
-//     }
-//     document.body.removeChild( textArea );
-// }
+var dictionary = {
+    "english": {
+        "_documentlink": "Document Link"
+    },
+    "spanish": {
+        "_documentlink" : "Enlace de documento"
+    },
+    "french": {
+        "_documentlink" : "Lien de document"
+    },
+    "german": {
+        "_documentlink" : "Dokumentlink"
+    },
+    "russian": {
+        "_documentlink": "ссылка документа",
+    },
+    "arabic": {
+        "_documentlink" : "رابط المستند"
+    },
+    "chinese": {
+        "_documentlink" : "文件链接"
+    }
+};
 
 
+function setDocumentButtonLang(language){
+    if (dictionary.hasOwnProperty(language)) {
+        $("#doc-lang-select").html(dictionary[language]["_documentlink"]);
+    }
+};
