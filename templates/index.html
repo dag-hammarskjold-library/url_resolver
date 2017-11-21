@@ -54,7 +54,7 @@
             <iframe id='document-frame' src="{{ context.EN }}" width="80%"" height="1200px"></iframe>
         </div>
         <div class="tab-pane" id="metadata">
-            <h3>Metadata</h3>
+            <h3>Metadata</h3> 
             <p><b>Title:</b> {{ context.metadata.title }} <span class="pull-right">
                 <button class="btn-xs btn-warning" id="title">link</button>
             </span></p>
@@ -151,7 +151,10 @@
                             <button class="btn-xs btn-warning" id="authority_authors">link</button>
                         </span>
                 </div>
-            </div>        
+            </div>  
+            <span class="pull-right">
+                <button class="btn-xs btn-warning" id="all-metadata">All Metadata</button>
+            </span>      
         </div>
     </div>
 </div>
@@ -163,6 +166,7 @@
     </div>
 </div> -->
 
+<!-- 
 <div class="modal fade" id="link_modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -183,7 +187,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 <div class="modal fade" id="document_modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">

@@ -84,14 +84,19 @@ $( document ).ready(function(){
         var href = $("iframe").attr('src');
         get_document_url(href);
     });
+
+    $("#document_modal").on("show.bs.modal", function(event){
+        $(this).find('h4#modal-title').text("New title");
+
+    });
 });
 
 
 function get_metadata(field){
     var doc_symbol = $('p.document-symbol')[0].id;
     var metadata_url = '/metadata?tag='+field+'&doc_symbol='+doc_symbol
-    document.getElementById("modal-body-data").innerHTML = location.protocol+"//"+location.host+metadata_url;
-    $('#link_modal').modal("show");
+    document.getElementById("modal-document-data").innerHTML = location.protocol+"//"+location.host+metadata_url;
+    $('#document_modal').modal("show");
 }
 
 function get_document_url(href){
@@ -101,25 +106,32 @@ function get_document_url(href){
 
 var dictionary = {
     "english": {
-        "_documentlink": "Document Link"
+        "_documentlink": "Document Link",
+        "_metadatalink": "Metadata Link"
     },
     "spanish": {
-        "_documentlink" : "Enlace de documento"
+        "_documentlink" : "Enlace de documento",
+        "_metadatalink": "Metadata Link"
     },
     "french": {
-        "_documentlink" : "Lien de document"
+        "_documentlink" : "Lien de document",
+        "_metadatalink": "Metadata Link"
     },
     "german": {
-        "_documentlink" : "Dokumentlink"
+        "_documentlink" : "Dokumentlink",
+        "_metadatalink": "Metadata Link"
     },
     "russian": {
         "_documentlink": "ссылка документа",
+        "_metadatalink": "Metadata Link"
     },
     "arabic": {
-        "_documentlink" : "رابط المستند"
+        "_documentlink" : "رابط المستند",
+        "_metadatalink": "Metadata Link"
     },
     "chinese": {
-        "_documentlink" : "文件链接"
+        "_documentlink" : "文件链接",
+        "_metadatalink": "Metadata Link"
     }
 };
 
@@ -127,5 +139,15 @@ var dictionary = {
 function setDocumentButtonLang(language){
     if (dictionary.hasOwnProperty(language)) {
         $("#doc-lang-select").html(dictionary[language]["_documentlink"]);
+    }
+};
+
+function setModalLang(language, prop){
+    if(dictionary.hasOwnProperty(language)) {
+        if(prop === "metadata"){
+            $("#modal-lable").text(dictionary[language]["_metadatalink"]);
+        } else {
+            $("#modal-lable").text(dictionary[language]["_documentlink"]);
+        }
     }
 };
