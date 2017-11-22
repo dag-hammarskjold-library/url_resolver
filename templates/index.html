@@ -54,7 +54,11 @@
             <iframe id='document-frame' src="{{ context.EN }}" width="80%"" height="1200px"></iframe>
         </div>
         <div class="tab-pane" id="metadata">
-            <h3>Metadata</h3> 
+            <h3>Metadata</h3>  
+            <p class="pull-right">
+            <button class="btn-xs btn-info" id="all-metadata">All Metadata</button>
+            </p>
+            <hr>
             <p><b>Title:</b> {{ context.metadata.title }} <span class="pull-right">
                 <button class="btn-xs btn-warning" id="title">link</button>
             </span></p>

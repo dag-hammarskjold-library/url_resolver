@@ -1,10 +1,12 @@
 from flask import Flask
 from flask import render_template, abort, redirect, request
+import csv
+from dict2xml import dict2xml
 from pymarc.field import Field
 from urllib import request as req
 from urllib.parse import quote_plus
 from io import BytesIO
-# import json
+import json
 import re
 import ssl
 import xml.etree.ElementTree as ET
@@ -89,7 +91,7 @@ class MARCXmlParse:
     def document_symbol(self):
         return self.record.document_symbol()
 
-    def related_documents(self):
+    def related_documents(self, request):
         '''
         tricky edge case:
         S/RES/2049(2012) is a valid symbol
@@ -103,9 +105,9 @@ class MARCXmlParse:
             m = reldoc_re.match(rel_doc.value())
             if m:
                 rel_string = m.group(1) + '%20' + m.group(2)
-                docs[rel_doc.value()] = '/symbol/{}'.format(rel_string)
+                docs[rel_doc.value()] = request.url_root + '/symbol/{}'.format(rel_string)
             else:
-                docs[rel_doc.value()] = '/symbol/{}'.format(rel_doc.value())
+                docs[rel_doc.value()] = request.url_root + '/symbol/{}'.format(rel_doc.value())
         return docs
 
     def summary(self):
@@ -152,7 +154,7 @@ def index(search_string):
     """
     rec_id = _get_record_id(search_string)
     urls = _get_pdf_urls(rec_id)
-    marc_dict = _get_marc_metadata(rec_id)
+    marc_dict = _get_marc_metadata(rec_id, request)
 
     langs = ['EN', 'ES', 'FR', 'DE', 'RU', 'AR', 'ZH']
     ctx = {}
@@ -170,15 +172,32 @@ def link_metadata():
     meta_json = {}
     tag = request.args.get('tag', None)
     doc_symbol = request.args.get('doc_symbol', '')
+    resp_format = request.args.get('format', 'json')
     rec_id = _get_record_id(doc_symbol)
-    marc_dict = _get_marc_metadata(rec_id, flat=True)
+    marc_dict = _get_marc_metadata(rec_id, request)
     meta_json['document_symbol'] = doc_symbol
-    meta_json[tag] = marc_dict.get(tag, None)
-    return render_template('result.html', context=meta_json)
+    if tag:
+        meta_json[tag] = marc_dict.get(tag, None)
+    else:
+        meta_json['metadata'] = marc_dict
+    if resp_format == 'xml':
+        xml = '<?xml version="1.0"?>\n'
+        xml += dict2xml(meta_json, wrap='record')
+        return render_template('result.html', context=xml)
+    elif resp_format == 'json':
+        context = json.dumps(meta_json, sort_keys=True, indent=2, separators=(',', ': '))
+        return render_template('result.html', context=context)
+    # elif resp_format == 'csv':
+    #     buff = BytesIO()
+    #     w = csv.DictWriter(buff, meta_json.keys())
+    #     w.writeheader()
+    #     w.writerow(meta_json)
+    #     return render_template('result.html', context=w)
+
     # return json.dumps(meta_json)
 
 
-def _get_marc_metadata(record_id, flat=False):
+def _get_marc_metadata(record_id, req):
     '''
     use the xml format of the page
     to nab metadata
@@ -194,7 +213,7 @@ def _get_marc_metadata(record_id, flat=False):
         'notes': parser.notes(),
         'publisher': parser.publisher(),
         'pubyear': parser.pubyear(),
-        'related_documents': parser.related_documents(),
+        'related_documents': parser.related_documents(req),
         'subjects': parser.subjects(),
         'summary': parser.summary(),
         'title': parser.title(),

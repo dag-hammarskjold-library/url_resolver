@@ -79,6 +79,9 @@ $( document ).ready(function(){
     $("#authority_authors").on("click", function(){
         get_metadata('authority_authors');
     });
+    $("#all-metadata").on("click", function(){
+        get_metadata('');
+    });
 
     $("#doc-lang-select").on("click", function(){
         var href = $("iframe").attr('src');
@@ -86,7 +89,7 @@ $( document ).ready(function(){
     });
 
     $("#document_modal").on("show.bs.modal", function(event){
-        $(this).find('h4#modal-title').text("New title");
+        $(this).find('h4.modal-title').text("");
 
     });
 });

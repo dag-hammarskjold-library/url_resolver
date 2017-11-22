@@ -7,8 +7,20 @@
     </form>
 </div> -->
 
+
+
 <div class="container"> 
-    <table class="table">
+    <div class="buttons">
+        <button class="clipboard" data-clipboard-target="#document-data">
+         Copy to Clipboard
+        </button>
+        <button class="clipboard" class="btn btn-default" data-dismiss="modal">Close</button>
+    </div>
+    <pre>
+{{context}}
+    </pre>
+    {#
+   <!--  <table class="table">
         <thead>
         {% for k in context.keys() %}
             <th>{{k}}</th>
@@ -19,11 +31,12 @@
         <td>{{v}}</td>
         {% endfor %}  
         </tbody>
-    </table> 
+    </table>  -->
+    #}
     <div>
-        <button class="btn btn-info">XML</button>
-        <button class="btn btn-info">JSON</button>
-        <button class="btn btn-info">CSV</button>
+        <button class="btn btn-info" disabled>XML</button>
+        <button class="btn btn-info" disabled>JSON</button>
+        <button class="btn btn-info" disabled>CSV</button>
     </div> 
 </div>
 {% endblock %}
