@@ -92,6 +92,30 @@ $( document ).ready(function(){
         $(this).find('h4.modal-title').text("");
 
     });
+
+    $("#metadata-xml").on("click", function(){
+        console.log("click, metadata-xml");
+        var url = window.location.href;
+        var new_url = url + "&format=xml";
+        $.ajax({
+            url: new_url,
+            type: 'GET',
+            dataType: "xml",
+            async: false,
+            // contentType: "text/xml; charset=\"utf-8\"",
+            success: function(data, status, jqXHR) {
+                // var text = jqXHR.responseText;
+                console.log("Got back" + data);
+                $("#document-metadata").html("<pre>" + data + "</pre>");
+                $("#metadata-xml").prop('disabled', true);
+                $("#metadata-json").removeAttr('disabled');
+                $("#metadata-json").prop('disabled', false)
+            },
+            error: function(msg){
+                console.log("error: " + msg);
+            }
+        });
+    });
 });
 
 

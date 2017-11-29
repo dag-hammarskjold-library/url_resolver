@@ -1,11 +1,11 @@
 from flask import Flask
-from flask import render_template, abort, redirect, request
+from flask import render_template, abort, redirect, request, Response
 import csv
 from dict2xml import dict2xml
 from pymarc.field import Field
 from urllib import request as req
 from urllib.parse import quote_plus
-from io import BytesIO
+from io import BytesIO, StringIO
 import json
 import re
 import ssl
@@ -183,18 +183,17 @@ def link_metadata():
     if resp_format == 'xml':
         xml = '<?xml version="1.0"?>\n'
         xml += dict2xml(meta_json, wrap='record')
-        return render_template('result.html', context=xml)
+        return Response(xml, mimetype='text/xml')
+        # return render_template('result.html', context=xml)
     elif resp_format == 'json':
         context = json.dumps(meta_json, sort_keys=True, indent=2, separators=(',', ': '))
         return render_template('result.html', context=context)
     # elif resp_format == 'csv':
-    #     buff = BytesIO()
+    #     buff = StringIO()
     #     w = csv.DictWriter(buff, meta_json.keys())
     #     w.writeheader()
     #     w.writerow(meta_json)
     #     return render_template('result.html', context=w)
-
-    # return json.dumps(meta_json)
 
 
 def _get_marc_metadata(record_id, req):

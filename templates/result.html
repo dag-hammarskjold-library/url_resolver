@@ -1,42 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
-<!-- <div class="container">
-    <form action="symbol" method="GET">
-        <label for="document_symbol">Document Symbol: </label>
-        <input type="text" name="document_symbol" placeholder="{{context.search}}" maxlength="30" width="45%">
-    </form>
-</div> -->
-
-
 
 <div class="container"> 
     <div class="buttons">
-        <button class="clipboard" data-clipboard-target="#document-data">
+        <button class="clipboard" data-clipboard-target="#document-metadata">
          Copy to Clipboard
         </button>
-        <button class="clipboard" class="btn btn-default" data-dismiss="modal">Close</button>
     </div>
-    <pre>
+    <pre id="document-metadata">
 {{context}}
     </pre>
-    {#
-   <!--  <table class="table">
-        <thead>
-        {% for k in context.keys() %}
-            <th>{{k}}</th>
-        {%endfor%} 
-        </thead>
-        <tbody>
-        {% for v in context.values() %}
-        <td>{{v}}</td>
-        {% endfor %}  
-        </tbody>
-    </table>  -->
-    #}
     <div>
-        <button class="btn btn-info" disabled>XML</button>
-        <button class="btn btn-info" disabled>JSON</button>
-        <button class="btn btn-info" disabled>CSV</button>
+        <button class="btn btn-info" id="metadata-xml">XML</button>
+        <button class="btn btn-info" id="metadata-json" disabled="true">JSON</button>
+        <!-- <button class="btn btn-info" id="metadata-csv" disabled>CSV</button> -->
     </div> 
 </div>
 {% endblock %}
