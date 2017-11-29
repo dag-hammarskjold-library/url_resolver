@@ -97,30 +97,26 @@ $( document ).ready(function(){
         console.log("click, metadata-xml");
         var url = window.location.href;
         var new_url = url + "&format=xml";
-        $.ajax({
-            url: new_url,
-            type: 'GET',
-            dataType: "xml",
-            async: false,
-            // contentType: "text/xml; charset=\"utf-8\"",
-            success: function(data, status, jqXHR) {
-                // var text = jqXHR.responseText;
-                console.log("Got back" + data);
-                $("#document-metadata").html("<pre>" + data + "</pre>");
-                $("#metadata-xml").prop('disabled', true);
-                $("#metadata-json").removeAttr('disabled');
-                $("#metadata-json").prop('disabled', false)
-            },
-            error: function(msg){
-                console.log("error: " + msg);
-            }
-        });
+        $("pre").load(new_url);
+        $("#metadata-xml").prop('disabled', true);
+        $("#metadata-json").removeAttr('disabled');
+        $("#metadata-json").prop('disabled', false)
+    });
+
+     $("#metadata-json").on("click", function(){
+        console.log("click, metadata-json");
+        var url = window.location.href;
+        var new_url = url + "&format=json";
+        $("window").load(new_url);
+        $("#metadata-xml").prop('disabled', false);
+        // $("#metadata-json").removeAttr('disabled');
+        $("#metadata-json").prop('disabled', true)
     });
 });
 
 
 function get_metadata(field){
-    var doc_symbol = $('p.document-symbol')[0].id;
+    var doc_symbol = encodeURIComponent($('p.document-symbol')[0].id);
     var metadata_url = '/metadata?tag='+field+'&doc_symbol='+doc_symbol
     document.getElementById("modal-document-data").innerHTML = location.protocol+"//"+location.host+metadata_url;
     $('#document_modal').modal("show");
