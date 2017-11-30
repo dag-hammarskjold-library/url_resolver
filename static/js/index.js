@@ -105,7 +105,7 @@ $( document ).ready(function(){
 function get_metadata(field){
     var doc_symbol = encodeURIComponent($('p.document-symbol')[0].id);
     var metadata_url = '/metadata?tag='+field+'&doc_symbol='+doc_symbol
-    document.getElementById("modal-document-data").innerHTML = location.protocol+"//"+location.host+metadata_url;
+    document.getElementById("modal-document-data").innerHTML = location.protocol+"//"+location.host+'/dev'+metadata_url;
     $('#document_modal').modal("show");
 }
 
