@@ -94,23 +94,10 @@ $( document ).ready(function(){
     });
 
     $("#metadata-xml").on("click", function(){
-        console.log("click, metadata-xml");
         var url = window.location.href;
-        var new_url = url + "&format=xml";
-        $("pre").load(new_url);
+        window.location = url + "&format=xml";
         $("#metadata-xml").prop('disabled', true);
-        $("#metadata-json").removeAttr('disabled');
         $("#metadata-json").prop('disabled', false)
-    });
-
-     $("#metadata-json").on("click", function(){
-        console.log("click, metadata-json");
-        var url = window.location.href;
-        var new_url = url + "&format=json";
-        $("window").load(new_url);
-        $("#metadata-xml").prop('disabled', false);
-        // $("#metadata-json").removeAttr('disabled');
-        $("#metadata-json").prop('disabled', true)
     });
 });
 
