@@ -2,6 +2,10 @@
 {% block content %}
 <title>{% block title %}{% endblock %}</title>
 
+<div id="document_lang" style="display: none;">
+    {{ context.lang }}
+</div>
+
 <div id="exTab2" class="container"> 
     <ul class="nav nav-tabs">
         <li class="active">
@@ -9,9 +13,9 @@
         </li>
         <li><a href="#metadata" data-toggle="tab">Metadata</a></li>
     </ul>
+
     <div class="tab-content">
         <div class="tab-pane active" id="document">
-        
             {% if context.EN %}
             <button class='lang btn btn-info' id='en' value='{{ context.EN }}' data-translate="_document_link">English</button> 
             {% else %}
@@ -156,42 +160,10 @@
                         </span>
                 </div>
             </div>  
-            <!-- <span class="pull-right">
-                <button class="btn-xs btn-warning" id="all-metadata">All Metadata</button>
-            </span>   -->    
         </div>
     </div>
 </div>
 
-<!-- <div id="dataDiv" style="display: none;">
-    <div class="modal-body">
-        <pre id="modal-body-data">
-        </pre>
-    </div>
-</div> -->
-
-<!-- 
-<div class="modal fade" id="link_modal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="modal-lable">Metadata Link</h4>
-            </div>
-            <div class="modal-body">
-                <pre id="modal-body-data">
-                </pre>
-            </div>
-            <div class="modal-footer">
-                
-                <button class="clipboard" data-clipboard-target="#modal-body-data">
-                     Copy to Clipboard
-                </button>
-                <button class="clipboard"" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div> -->
 
 <div class="modal fade" id="document_modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">

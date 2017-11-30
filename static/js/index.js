@@ -154,7 +154,7 @@ function setDocumentButtonLang(language){
 
 function setModalLang(language, prop){
     if(dictionary.hasOwnProperty(language)) {
-        if(prop === "metadata"){
+        if(prop == "metadata"){
             $("#modal-lable").text(dictionary[language]["_metadatalink"]);
         } else {
             $("#modal-lable").text(dictionary[language]["_documentlink"]);

@@ -1,11 +1,10 @@
 from flask import Flask
 from flask import render_template, abort, redirect, request, Response
-import csv
 from dict2xml import dict2xml
 from pymarc.field import Field
 from urllib import request as req
 from urllib.parse import quote_plus
-from io import BytesIO, StringIO
+from io import BytesIO
 import json
 import re
 import ssl
@@ -155,10 +154,13 @@ def index(search_string):
     rec_id = _get_record_id(search_string)
     urls = _get_pdf_urls(rec_id)
     marc_dict = _get_marc_metadata(rec_id, request)
+    language = request.args.get('lang', None)
 
     langs = ['EN', 'ES', 'FR', 'DE', 'RU', 'AR', 'ZH']
     ctx = {}
     ctx['metadata'] = marc_dict
+    if language and language.upper() in langs:
+        ctx['lang'] = language.upper()
     for url in urls:
         for lang in langs:
             if re.search('-{}\.pdf'.format(lang), url):
@@ -184,16 +186,9 @@ def link_metadata():
         xml = '<?xml version="1.0"?>\n'
         xml += dict2xml(meta_json, wrap='record')
         return Response(xml, mimetype='text/xml')
-        # return render_template('result.html', context=xml)
     elif resp_format == 'json':
         context = json.dumps(meta_json, sort_keys=True, indent=2, separators=(',', ': '))
         return render_template('result.html', context=context)
-    # elif resp_format == 'csv':
-    #     buff = StringIO()
-    #     w = csv.DictWriter(buff, meta_json.keys())
-    #     w.writeheader()
-    #     w.writerow(meta_json)
-    #     return render_template('result.html', context=w)
 
 
 def _get_marc_metadata(record_id, req):
