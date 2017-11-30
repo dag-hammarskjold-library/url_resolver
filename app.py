@@ -1,8 +1,11 @@
 from flask import Flask
-from flask import render_template, abort, redirect
+from flask import render_template, abort, redirect, request, Response
+from dict2xml import dict2xml
+from pymarc.field import Field
 from urllib import request as req
 from urllib.parse import quote_plus
 from io import BytesIO
+import json
 import re
 import ssl
 import xml.etree.ElementTree as ET
@@ -26,7 +29,7 @@ class MARCXmlParse:
         given a url, e.g.
             https://digitallibrary.un.org/record/696939/export/xm
         parse the xml via pymarc.parse_xml_to_array
-        use pymarc to pull out fields:  
+        use pymarc to pull out fields:
             author
             notes
             publisher
@@ -39,13 +42,19 @@ class MARCXmlParse:
     def __init__(self, url):
         resp = req.urlopen(url, context=ssl._create_unverified_context())
         if resp.status != 200:
-            raise PageNotFoundException("Could not get data from {}".format(url)) 
+            raise PageNotFoundException("Could not get data from {}".format(url))
         self.xml_doc = BytesIO(resp.read())
         r = marcxml.parse_xml_to_array(self.xml_doc, False, 'NFC')
         self.record = r[0]
 
-    def authors(self):
-        return self.record.authors()
+    def author(self):
+        return self.record.author()
+
+    def authority_authors(self):
+        authors = []
+        for auth in self.record.authority_authors():
+            authors.append(Field.format_field(auth))
+        return authors
 
     def title(self):
         return self.record.title()
@@ -66,6 +75,9 @@ class MARCXmlParse:
         app.logger.debug(subjs)
         return subjs
 
+    def agenda(self):
+        return self.record.agenda()
+
     def notes(self):
         return [note.value() for note in self.record.notes()]
 
@@ -78,12 +90,12 @@ class MARCXmlParse:
     def document_symbol(self):
         return self.record.document_symbol()
 
-    def related_documents(self):
+    def related_documents(self, request):
         '''
         tricky edge case:
         S/RES/2049(2012) is a valid symbol
         S/RES/2273(2016) is NOT a valie symbol
-        but "S/RES/2273 (2016)" is
+        but "S/RES/2273 (2016)" is a valid symbol
         We want to try both?
         '''
         docs = {}
@@ -92,33 +104,37 @@ class MARCXmlParse:
             m = reldoc_re.match(rel_doc.value())
             if m:
                 rel_string = m.group(1) + '%20' + m.group(2)
-                docs[rel_doc.value()] = '/symbol/{}'.format(rel_string)
+                docs[rel_doc.value()] = request.url_root + '/symbol/{}'.format(rel_string)
             else:
-                docs[rel_doc.value()] = '/symbol/{}'.format(rel_doc.value())
+                docs[rel_doc.value()] = request.url_root + '/symbol/{}'.format(rel_doc.value())
         return docs
 
     def summary(self):
         return self.record.summary()
 
-    def agenda(self):
-        return self.record.agenda()
-
     def title_statement(self):
         return [ts.value() for ts in self.record.title_statement()]
+
+    def imprint(self):
+        for f in self.record.imprint():
+            return f.value()
 
 
 app = Flask(__name__)
 context = ssl._create_unverified_context()
+
 
 @app.errorhandler(404)
 def page_not_found(e):
     app.logger.error(e)
     return render_template('404.html'), 404
 
+
 @app.route('/')
 def redirect_to_symbol():
     # pick a General Assembly resolution -- like A/RES/52/115
     return redirect('/symbol/A/RES/45/110')
+
 
 @app.route('/symbol', defaults={'path': ''})
 @app.route('/symbol/<path:search_string>')
@@ -135,15 +151,16 @@ def index(search_string):
     record id's are internal to envivio.
     document symbols (search strings) are known and used by users of UNDL
     """
-    search_string = quote_plus(search_string)
-    app.logger.info(search_string)
     rec_id = _get_record_id(search_string)
     urls = _get_pdf_urls(rec_id)
-    marc_dict = _get_marc_metadata(rec_id)
+    marc_dict = _get_marc_metadata(rec_id, request)
+    language = request.args.get('lang', None)
 
     langs = ['EN', 'ES', 'FR', 'DE', 'RU', 'AR', 'ZH']
     ctx = {}
     ctx['metadata'] = marc_dict
+    if language and language.upper() in langs:
+        ctx['lang'] = language.upper()
     for url in urls:
         for lang in langs:
             if re.search('-{}\.pdf'.format(lang), url):
@@ -152,7 +169,29 @@ def index(search_string):
     return render_template('index.html', context=ctx)
 
 
-def _get_marc_metadata(record_id):
+@app.route('/metadata', methods=['GET'])
+def link_metadata():
+    meta_json = {}
+    tag = request.args.get('tag', None)
+    doc_symbol = request.args.get('doc_symbol', '')
+    resp_format = request.args.get('format', 'json')
+    rec_id = _get_record_id(doc_symbol)
+    marc_dict = _get_marc_metadata(rec_id, request)
+    meta_json['document_symbol'] = doc_symbol
+    if tag:
+        meta_json[tag] = marc_dict.get(tag, None)
+    else:
+        meta_json['metadata'] = marc_dict
+    if resp_format == 'xml':
+        xml = '<?xml version="1.0"?>\n'
+        xml += dict2xml(meta_json, wrap='record')
+        return Response(xml, mimetype='text/xml')
+    elif resp_format == 'json':
+        context = json.dumps(meta_json, sort_keys=True, indent=2, separators=(',', ': '))
+        return render_template('result.html', context=context)
+
+
+def _get_marc_metadata(record_id, req):
     '''
     use the xml format of the page
     to nab metadata
@@ -160,19 +199,22 @@ def _get_marc_metadata(record_id):
     url = base_url + '/record/{}'.format(record_id) + '/export/xm'
     parser = MARCXmlParse(url)
     ctx = {
-        'title': parser.title(),
-        'authors': parser.authors(),
-        'subjects': parser.subjects(),
+        'agenda': parser.agenda(),
+        'author': parser.author(),
+        'authority_authors': parser.authority_authors(),
+        'document_symbol': parser.document_symbol(),
+        'imprint': parser.imprint(),
         'notes': parser.notes(),
         'publisher': parser.publisher(),
         'pubyear': parser.pubyear(),
-        'document_symbol': parser.document_symbol(),
-        'related_documents': parser.related_documents(),
+        'related_documents': parser.related_documents(req),
+        'subjects': parser.subjects(),
         'summary': parser.summary(),
-        'agenda': parser.agenda(), 
+        'title': parser.title(),
         'title_statement': parser.title_statement()
     }
     return ctx
+
 
 def _get_record_id(search_string):
     '''
@@ -181,7 +223,7 @@ def _get_record_id(search_string):
     @raises 404
     '''
     # https://github.com/dag-hammarskjold-library/pymarc/tree/dev
-
+    search_string = quote_plus(search_string)
     path = '/search'
     query = "ln=en&p=191__a:\"{}\"&c=Resource+Type&c=UN+Bodies&fti=0&so=d&rg=10&sc=0&of=xm".format(search_string)
     app.logger.info("!! {}".format(search_string))
@@ -217,6 +259,7 @@ def _get_pdf_urls(record_id):
             app.logger.error("Caught exception getting pdf urls: {}".format(e))
             abort(404)
     return urls
+
 
 def _fetch_xml_root(url_pattern, param):
     url = base_url + url_pattern.format(param)

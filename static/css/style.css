@@ -34,6 +34,12 @@ body {
   color : white;
   background-color: #428bca;
   padding : 5px 15px;
+  width: 90%
+}
+
+#exTab2 div {
+  padding : 5px 15px;
+  width: 90%
 }
 
 /* remove border radius for the tab */
@@ -118,3 +124,4 @@ footer .footer-nav {
   margin-right: 25px;
   list-style: none;
 }
+

@@ -2,6 +2,10 @@
 {% block content %}
 <title>{% block title %}{% endblock %}</title>
 
+<div id="document_lang" style="display: none;">
+    {{ context.lang }}
+</div>
+
 <div id="exTab2" class="container"> 
     <ul class="nav nav-tabs">
         <li class="active">
@@ -9,69 +13,118 @@
         </li>
         <li><a href="#metadata" data-toggle="tab">Metadata</a></li>
     </ul>
+
     <div class="tab-content">
         <div class="tab-pane active" id="document">
             {% if context.EN %}
-            <button class='lang btn btn-info' id='en' value='{{ context.EN }}'>English</button> 
+            <button class='lang btn btn-info' id='en' value='{{ context.EN }}' data-translate="_document_link">English</button> 
             {% else %}
             <button class='lang btn btn-info' id='en' disabled>English</button> 
             {% endif %}
             {% if context.ES %}
-            <button class='lang btn btn-info' id='es' value='{{ context.ES }}'>Español</button> 
+            <button class='lang btn btn-info' id='es' value='{{ context.ES }}' data-translate="_document_link">Español</button> 
             {% else %}
             <button class='lang btn btn-info' id='es' disabled>Español</button> 
             {% endif %}
             {% if context.FR %}
-            <button class='lang btn btn-info' id='fr' value='{{ context.FR }}'>Français</button> 
+            <button class='lang btn btn-info' id='fr' value='{{ context.FR }}' data-translate="_document_link">Français</button> 
             {% else %}
             <button class='lang btn btn-info' id='fr' disabled>Français</button> 
             {% endif %}
             {% if context.DE %}
-            <button class='lang btn btn-info' id='de' value='{{ context.DE }}'>Other</button> 
+            <button class='lang btn btn-info' id='de' value='{{ context.DE }}' data-translate="_document_link">Other</button> 
             {% else %}
             <button class='lang btn btn-info' id='de' disabled>Other</button> 
             {% endif %}
             {% if context.RU %}
-            <button class='lang btn btn-info' id='ru' value='{{ context.RU }}'>Русский</button> 
+            <button class='lang btn btn-info' id='ru' value='{{ context.RU }}' data-translate="_document_link">Русский</button> 
             {% else %}
             <button class='lang btn btn-info' id='ru' disabled>Русский</button> 
             {% endif %}
             {% if context.AR %}
-            <button class='lang btn btn-info' id='ar' value='{{ context.AR }}'>العربية</button> 
+            <button class='lang btn btn-info' id='ar' value='{{ context.AR }}' data-translate="_document_link">العربية</button> 
             {% else %}
             <button class='lang btn btn-info' id='ar' disabled>العربية</button> 
             {% endif %}
             {% if context.ZH %}
-            <button class='lang btn btn-info' id='zh' value='{{ context.ZH }}'>中文</button>
+            <button class='lang btn btn-info' id='zh' value='{{ context.ZH }}' data-translate="_document_link">中文</button>
             {% else %}
-            <button class='lang btn btn-info' id='zh' disabled>中文</button>
+            <button class='lang btn btn-info' id='zh' disabled >中文</button>
             {% endif %}
+            &nbsp;&nbsp;&nbsp;
+            <button class="btn-default" id="doc-lang-select">
+                Document Link
+            </button>
             <iframe id='document-frame' src="{{ context.EN }}" width="80%"" height="1200px"></iframe>
         </div>
         <div class="tab-pane" id="metadata">
-            <h3>Metadata</h3>
-            <p><b>Title:</b> {{ context.metadata.title }}</p>
-            <p><b>Title Statement:</b> {{ context.metadata.title_statement.0 }}</p>
-            <p><b>Document Symbol:</b> {{ context.metadata.document_symbol }}</p>
-            <p> <b>Pubdate:</b> {{ context.metadata.pubyear }}</p>
-            {% if context.metadata.autors %}
-                <p> <b>Authors:</b> {{ context.metdata.authors }}</p>
-            {% endif %}
+            <h3>Metadata</h3>  
+            <span class="pull-right">
+            <button class="btn-xs btn-info" id="all-metadata">All Metadata</button>
+            </span>
+            <hr>
+            <p><b>Title:</b> {{ context.metadata.title }} <span class="pull-right">
+                <button class="btn-xs btn-warning" id="title">link</button>
+            </span></p>
+            <p><b>Title Statement:</b> {{ context.metadata.title_statement.0 }}
+                <span class="pull-right">
+                    <button class="btn-xs btn-warning" id="title_statement">link</button>
+                </span>
+            </p>
+            <p class="document-symbol" id="{{ context.metadata.document_symbol }}">
+                <b>Document Symbol:</b> {{ context.metadata.document_symbol }}
+                <span class="pull-right">
+                    <button class="btn-xs btn-warning" id="document_symbol">link</button>
+                </span>
+            </p>
+            <p><b>Pubdate:</b> {{ context.metadata.pubyear }}
+                <span class="pull-right">
+                    <button class="btn-xs btn-warning" id="pubyear">link</button>
+                </span>
+            </p>
+          <!--   <p><b>Agenda:</b> {{ context.metadata.agenda }}
+                <span class="pull-right">
+                    <button class="btn-xs btn-warning" id="agenda">link</button>
+                </span>
+            </p> -->
+            <p> <b>Authors:</b> {{ context.metadata.author }}
+                <span class="pull-right">
+                    <button class="btn-xs btn-warning" id="author">link</button>
+                </span>
+            </p>
+
+            <p><b>Imprint:</b> {{ context.metadata.imprint }}
+                <span class="pull-right">
+                    <button class="btn-xs btn-warning" id="imprint">link</button>
+                </span>
+            </p>
             <div id="accordion">
                 <h5>Summary:</h5>
                 <div>
-                    <p>{{ context.metadata.summary }}</p>
+                    <p>{{ context.metadata.summary }}
+                        <span class="pull-right">
+                            <button class="btn-xs btn-warning" id="summary">link</button>
+                        </span>
+                    </p>
                 </div>
                 <h5>Agenda:</h5>
                 <div>
-                    <p>{{ context.metadata.agenda }}</p>
+                    <p>{{ context.metadata.agenda }}
+                          <span class="pull-right">
+                            <button class="btn-xs btn-warning" id="agenda">link</button>
+                        </span>
+                    </p>
                 </div>
                 <h5>Subjects:</h5>
                 <div>
-                    <ul>
+                    <ul> 
+
                         {% for k, v in context.metadata.subjects.items() %}
                         <li><a target="_blank" href="{{v}}">{{k}}</a></li>
                         {% endfor %}
+                        <span class="pull-right">
+                            <button class="btn-xs btn-warning" id="subjects">link</button>
+                        </span>
                     </ul>
                 </div>
                 <h5>Notes:</h5>
@@ -80,6 +133,9 @@
                         {% for note in context.metadata.notes %}
                         <li> {{ note }} </li>
                         {% endfor %}
+                        <span class="pull-right">
+                            <button class="btn-xs btn-warning" id="notes">link</button>
+                        </span>
                     </ul>
                 </div>  
                 <h5>Related Documents:</h5>
@@ -88,9 +144,44 @@
                         {% for doc, link in context.metadata.related_documents.items() %}
                         <li><a href="{{link}}">{{ doc }} </a></li>
                         {% endfor %}
+                        <span class="pull-right">
+                            <button class="btn-xs btn-warning" id="related_documents">link</button>
+                        </span>
                     </ul>
                 </div>
-            </div>        
+                <h5>Authors:</h5>
+                <div>
+                    <ul>
+                        {% for auth in context.metadata.authority_authors %}
+                        <li>{{auth}}</li>
+                        {% endfor %}
+                        <span class="pull-right">
+                            <button class="btn-xs btn-warning" id="authority_authors">link</button>
+                        </span>
+                </div>
+            </div>  
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="document_modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="modal-lable">Document Link</h4>
+            </div>
+            <div class="modal-body">
+                <pre id="modal-document-data">
+                </pre>
+            </div>
+            <div class="modal-footer">
+                <button class="clipboard" data-clipboard-target="#modal-document-data">
+                     Copy to Clipboard
+                </button>
+                <button class="clipboard" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
         </div>
     </div>
 </div>
