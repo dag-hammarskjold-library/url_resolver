@@ -11,12 +11,17 @@ import ssl
 import xml.etree.ElementTree as ET
 from pymarc import marcxml
 from urllib import parse
+from flask_cors import CORS
 
 base_url = 'https://digitallibrary.un.org'
 ns = '{http://www.loc.gov/MARC21/slim}'
 path = '/search'
 
-subject_re = re.compile(r'^\d{6,7}\s(?:unbis[nt])*\s*(.+)$|^([a-zA-Z ]+)\sunbis[nt]\s\d+$')
+subject_re = re.compile(r"""
+        ^\d{6,7}\s(?:unbis[nt])*\s*(.+)$|
+        ^([a-zA-Z ]+)\sunbis[nt]\s\d+$|
+        ^unbist\s([a-zA-Z ]+)\s\(DHLAUTH\)\d+$|
+        ([a-zA-Z ]+)\sunbist\s\(DHLAUTH\)\d+$""", re.X)
 reldoc_re = re.compile(r'^([a-zA-Z0-9\/]+)(\(\d{4}\))$')
 
 
@@ -68,6 +73,10 @@ class MARCXmlParse:
                 s = m.group(1)
                 if not m.group(1):
                     s = m.group(2)
+                    if not m.group(2):
+                        s = m.group(3)
+                        if not m.group(3):
+                            s = m.group(4)
                 if s:
                     search_string = parse.quote_plus(s)
                     query = "f1=subject&as=1&sf=title&so=a&rm=&m1=p&p1={}&ln=en".format(search_string)
@@ -122,6 +131,7 @@ class MARCXmlParse:
 
 app = Flask(__name__)
 context = ssl._create_unverified_context()
+cors = CORS(app, resources={r"/metadata/*": {"origins": "*"}})
 
 
 @app.errorhandler(404)
@@ -158,6 +168,7 @@ def index(search_string):
 
     langs = ['EN', 'ES', 'FR', 'DE', 'RU', 'AR', 'ZH']
     ctx = {}
+    ctx['undl'] = "https://digitallibrary.un.org/record/{}?ln=en".format(rec_id)
     ctx['metadata'] = marc_dict
     if language and language.upper() in langs:
         ctx['lang'] = language.upper()

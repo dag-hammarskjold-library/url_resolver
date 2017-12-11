@@ -120,11 +120,11 @@ var dictionary = {
         "_metadatalink": "Metadata Link"
     },
     "spanish": {
-        "_documentlink" : "Enlace de documento",
+        "_documentlink" : "Enlace del documento",
         "_metadatalink": "Metadata Link"
     },
     "french": {
-        "_documentlink" : "Lien de document",
+        "_documentlink" : "Lien du document",
         "_metadatalink": "Metadata Link"
     },
     "german": {
