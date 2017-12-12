@@ -69,6 +69,8 @@ class MARCXmlParse:
         for sub in self.record.subjects():
             app.logger.debug("Subject: {}".format(sub.value()))
             m = subject_re.match(sub.value())
+            # kludge!
+            # want cleaner way to show subjects
             if m:
                 s = m.group(1)
                 if not m.group(1):
@@ -85,6 +87,7 @@ class MARCXmlParse:
         return subjs
 
     def agenda(self):
+        # FIXME -- these are not showing up
         return self.record.agenda()
 
     def notes(self):
@@ -131,6 +134,7 @@ class MARCXmlParse:
 
 app = Flask(__name__)
 context = ssl._create_unverified_context()
+# probably do not want this set in production
 cors = CORS(app, resources={r"/metadata/*": {"origins": "*"}})
 
 

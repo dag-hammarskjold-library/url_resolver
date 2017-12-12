@@ -90,7 +90,6 @@ $( document ).ready(function(){
 
     $("#document_modal").on("show.bs.modal", function(event){
         $(this).find('h4.modal-title').text("");
-
     });
 
     $("#metadata-xml").on("click", function(){
@@ -99,6 +98,10 @@ $( document ).ready(function(){
         $("#metadata-xml").prop('disabled', true);
         $("#metadata-json").prop('disabled', false)
     });
+
+    var lang = $("div#document_lang").text();
+    console.log(lang);
+    
 });
 
 
