@@ -2,7 +2,7 @@
 /* event listeners for buttons */
 $( document ).ready(function(){
     var lang = $("div#document_lang").text().trim();
-
+    
     switch (lang.toLowerCase()){
             case "en":
                 setDocumentButtonLang("english");
@@ -33,6 +33,13 @@ $( document ).ready(function(){
         var iframe = $('#document-frame');
         iframe.attr('src', link);
         var lang = $(this).attr("id");
+
+        var loc = window.location.href;
+        var locLang = loc.split('?');
+        console.log(locLang);
+        if (locLang.length == 2){
+            history.pushState( {'page': locLang[0]}, lang,  '?lang=' + lang);
+        }
 
         switch (lang){
             case "en":
@@ -142,31 +149,31 @@ function get_document_url(href){
 var dictionary = {
     "english": {
         "_documentlink": "Document Link",
-        "_metadatalink": "Metadata Link"
+        "_undl_link": "UNDL Page"
     },
     "spanish": {
         "_documentlink" : "Enlace del documento",
-        "_metadatalink": "Metadata Link"
+        "_undl_link": "UNDL Página"
     },
     "french": {
         "_documentlink" : "Lien du document",
-        "_metadatalink": "Metadata Link"
+        "_undl_link": "UNDL Page"
     },
     "german": {
         "_documentlink" : "Dokumentlink",
-        "_metadatalink": "Metadata Link"
+        "_undl_link": "UNDL Seite"
     },
     "russian": {
         "_documentlink": "ссылка документа",
-        "_metadatalink": "Metadata Link"
+        "_undl_link": "UNDL страница"
     },
     "arabic": {
         "_documentlink" : "رابط المستند",
-        "_metadatalink": "Metadata Link"
+        "_undl_link": "صفحة UNDL"
     },
     "chinese": {
         "_documentlink" : "文件链接",
-        "_metadatalink": "Metadata Link"
+        "_undl_link": "UNDL 页"
     }
 };
 
@@ -174,15 +181,16 @@ var dictionary = {
 function setDocumentButtonLang(language){
     if (dictionary.hasOwnProperty(language)) {
         $("#doc-lang-select").html(dictionary[language]["_documentlink"]);
+        $("#link-lang-select").html(dictionary[language]["_undl_link"]);
     }
 };
 
-function setModalLang(language, prop){
-    if(dictionary.hasOwnProperty(language)) {
-        if(prop == "metadata"){
-            $("#modal-lable").text(dictionary[language]["_metadatalink"]);
-        } else {
-            $("#modal-lable").text(dictionary[language]["_documentlink"]);
-        }
-    }
-};
+// function setModalLang(language, prop){
+//     if(dictionary.hasOwnProperty(language)) {
+//         if(prop == "metadata"){
+//             $("#modal-lable").text(dictionary[language]["_metadatalink"]);
+//         } else {
+//             $("#modal-lable").text(dictionary[language]["_documentlink"]);
+//         }
+//     }
+// };
