@@ -1,14 +1,48 @@
 
 /* event listeners for buttons */
 $( document ).ready(function(){
+    var lang = $("div#document_lang").text().trim();
+    console.log(lang);
+
+    switch (lang.toLowerCase()){
+            case "en":
+                setDocumentButtonLang("english");
+                break;
+            case "fr":
+                setDocumentButtonLang('french');
+                break;
+            case "es":
+                setDocumentButtonLang('spanish');
+                break;
+            case 'de':
+                setDocumentButtonLang('german');
+                break;
+            case "ru":
+                setDocumentButtonLang("russian");
+                break;
+            case "ar":
+                setDocumentButtonLang("arabic");
+                break;
+            case "zh":
+                setDocumentButtonLang("chinese");
+                break;
+        }
+
+
     $(".lang").on("click", function() {
         var link = $(this).val();
         var iframe = $('#document-frame');
         iframe.attr('src', link);
-
         var lang = $(this).attr("id");
-        console.log(lang);
-
+        // var langStr = '';
+        // var loc = $(location).attr('href');
+        // var urlInfo = loc.split('?');
+        // if (urlInfo.length == 2) {
+        //     langStr = "?lang=" + lang;
+        // }
+        // var newLoc = urlInfo[0] + langStr;
+        
+        // console.log(loc);
         switch (lang){
             case "en":
                 setDocumentButtonLang("english");
@@ -99,9 +133,6 @@ $( document ).ready(function(){
         $("#metadata-json").prop('disabled', false)
     });
 
-    var lang = $("div#document_lang").text();
-    console.log(lang);
-    
 });
 
 
