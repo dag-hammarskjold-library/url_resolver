@@ -2,7 +2,6 @@
 /* event listeners for buttons */
 $( document ).ready(function(){
     var lang = $("div#document_lang").text().trim();
-    console.log(lang);
 
     switch (lang.toLowerCase()){
             case "en":
@@ -34,15 +33,7 @@ $( document ).ready(function(){
         var iframe = $('#document-frame');
         iframe.attr('src', link);
         var lang = $(this).attr("id");
-        // var langStr = '';
-        // var loc = $(location).attr('href');
-        // var urlInfo = loc.split('?');
-        // if (urlInfo.length == 2) {
-        //     langStr = "?lang=" + lang;
-        // }
-        // var newLoc = urlInfo[0] + langStr;
-        
-        // console.log(loc);
+
         switch (lang){
             case "en":
                 setDocumentButtonLang("english");

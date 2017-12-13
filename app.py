@@ -116,9 +116,9 @@ class MARCXmlParse:
             m = reldoc_re.match(rel_doc.value())
             if m:
                 rel_string = m.group(1) + '%20' + m.group(2)
-                docs[rel_doc.value()] = request.url_root + '/symbol/{}'.format(rel_string)
+                docs[rel_doc.value()] = request.url_root + 'symbol/{}'.format(rel_string)
             else:
-                docs[rel_doc.value()] = request.url_root + '/symbol/{}'.format(rel_doc.value())
+                docs[rel_doc.value()] = request.url_root + 'symbol/{}'.format(rel_doc.value())
         return docs
 
     def summary(self):

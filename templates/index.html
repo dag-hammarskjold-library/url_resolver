@@ -10,6 +10,13 @@
     {{ context.lang }}
 </div>
 
+<div id="upfront" class="center">
+    <span>
+        Document: <b>{{ context.metadata.document_symbol }}</b> &nbsp;
+        <button class="btn btn-info"><a href="{{context.undl}}" style="color:inherit">UNDL Record</a></button>
+    </span>
+</div>
+
 <div id="exTab2" class="container"> 
     <ul class="nav nav-tabs">
         <li class="active">
@@ -40,15 +47,15 @@
             {% else %}
             <button class='lang btn btn-info' id='fr' disabled>Français</button> 
             {% endif %}
-            {% if context.ES %}
-            <button class='lang btn btn-info' id='es' value='{{ context.ES }}' data-translate="_document_link">Español</button> 
-            {% else %}
-            <button class='lang btn btn-info' id='es' disabled>Español</button> 
-            {% endif %}
             {% if context.RU %}
             <button class='lang btn btn-info' id='ru' value='{{ context.RU }}' data-translate="_document_link">Русский</button> 
             {% else %}
             <button class='lang btn btn-info' id='ru' disabled>Русский</button> 
+            {% endif %}
+            {% if context.ES %}
+            <button class='lang btn btn-info' id='es' value='{{ context.ES }}' data-translate="_document_link">Español</button> 
+            {% else %}
+            <button class='lang btn btn-info' id='es' disabled>Español</button> 
             {% endif %}
             {% if context.DE %}
             <button class='lang btn btn-info' id='de' value='{{ context.DE }}' data-translate="_document_link">Other</button> 
@@ -63,25 +70,20 @@
                 Document Link
             </button>
             {% if context.lang|upper == "EN" %}
-            <iframe id='document-frame' src="{{ context.EN }}" width="90%"" height="1200px"></iframe>
+            <iframe id='document-frame' src="{{ context.EN }}" width="95%"" height="1200px"></iframe>
             {% elif context.lang|upper == "AR" %}
-            <iframe id='document-frame' src="{{ context.AR }}" width="90%"" height="1200px"></iframe>
+            <iframe id='document-frame' src="{{ context.AR }}" width="95%"" height="1200px"></iframe>
             {% elif context.lang|upper == "ZH" %}
-            <iframe id='document-frame' src="{{ context.ZH }}" width="90%"" height="1200px"></iframe>
+            <iframe id='document-frame' src="{{ context.ZH }}" width="95%"" height="1200px"></iframe>
             {% elif context.lang|upper == "FR" %}
-            <iframe id='document-frame' src="{{ context.FR }}" width="90%"" height="1200px"></iframe>
-            {% elif context.lang|upper == "ES" %}
-            <iframe id='document-frame' src="{{ context.ES }}" width="90%"" height="1200px"></iframe>
+            <iframe id='document-frame' src="{{ context.FR }}" width="95%"" height="1200px"></iframe>
             {% elif context.lang|upper == "RU" %}
-            <iframe id='document-frame' src="{{ context.RU }}" width="90%"" height="1200px"></iframe>
+            <iframe id='document-frame' src="{{ context.RU }}" width="95%"" height="1200px"></iframe>
+            {% elif context.lang|upper == "ES" %}
+            <iframe id='document-frame' src="{{ context.ES }}" width="95%"" height="1200px"></iframe>
             {% else %}
-            <iframe id='document-frame' src="{{ context.EN }}" width="90%"" height="1200px"></iframe>
+            <iframe id='document-frame' src="{{ context.EN }}" width="95%"" height="1200px"></iframe>
             {% endif %}
-
-
-            <div>
-                <button class="btn btn-info"'><a href="{{context.undl}}" style="color:inherit">UNDL Record</a></button>
-            </div>
 
         </div>
 
@@ -91,10 +93,10 @@
             <button class="btn-xs btn-info" id="all-metadata">All Metadata</button>
             </span>
             <hr>
-            <p><b>Title:</b> {{ context.metadata.title }} <span class="pull-right">
+            <!-- <p><b>Title:</b> {{ context.metadata.title }} <span class="pull-right">
                 <button class="btn-xs btn-warning" id="title">link</button>
-            </span></p>
-            <p><b>Title Statement:</b> {{ context.metadata.title_statement.0 }}
+            </span></p> -->
+            <p><b>Title: </b> {{ context.metadata.title_statement.0 }}
                 <span class="pull-right">
                     <button class="btn-xs btn-warning" id="title_statement">link</button>
                 </span>
@@ -115,11 +117,11 @@
                     <button class="btn-xs btn-warning" id="agenda">link</button>
                 </span>
             </p> -->
-            <p> <b>Authors:</b> {{ context.metadata.author }}
+           <!--  <p> <b>Authors:</b> {{ context.metadata.author }}
                 <span class="pull-right">
                     <button class="btn-xs btn-warning" id="author">link</button>
                 </span>
-            </p>
+            </p> -->
 
             <p><b>Imprint:</b> {{ context.metadata.imprint }}
                 <span class="pull-right">
@@ -183,6 +185,10 @@
                         {% for auth in context.metadata.authority_authors %}
                         <li>{{auth}}</li>
                         {% endfor %}
+                        {% if context.metadata.author %}
+                        <li>{{auth}}</li>
+                        {% endif %}
+
                         <span class="pull-right">
                             <button class="btn-xs btn-warning" id="authority_authors">link</button>
                         </span>
