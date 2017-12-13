@@ -2,9 +2,15 @@
 {% block content %}
 <title>{% block title %}{% endblock %}</title>
 
+<div id="main-image" class="center">
+    <!-- <img src="/static/images/main_logo_en.png" style="align: center; height: 80px"> -->
+    <img src="https://s3.amazonaws.com/zappa-j2ith0vcq/main_logo_en.png" style="align: center; height: 80px">
+</div>
+
 <div id="document_lang" style="display: none;">
     {{ context.lang }}
 </div>
+
 
 <div id="exTab2" class="container"> 
     <ul class="nav nav-tabs">
@@ -16,31 +22,6 @@
 
     <div class="tab-content">
         <div class="tab-pane active" id="document">
-            {% if context.EN %}
-            <button class='lang btn btn-info' id='en' value='{{ context.EN }}' data-translate="_document_link">English</button> 
-            {% else %}
-            <button class='lang btn btn-info' id='en' disabled>English</button> 
-            {% endif %}
-            {% if context.ES %}
-            <button class='lang btn btn-info' id='es' value='{{ context.ES }}' data-translate="_document_link">Español</button> 
-            {% else %}
-            <button class='lang btn btn-info' id='es' disabled>Español</button> 
-            {% endif %}
-            {% if context.FR %}
-            <button class='lang btn btn-info' id='fr' value='{{ context.FR }}' data-translate="_document_link">Français</button> 
-            {% else %}
-            <button class='lang btn btn-info' id='fr' disabled>Français</button> 
-            {% endif %}
-            {% if context.DE %}
-            <button class='lang btn btn-info' id='de' value='{{ context.DE }}' data-translate="_document_link">Other</button> 
-            {% else %}
-            <button class='lang btn btn-info' id='de' disabled>Other</button> 
-            {% endif %}
-            {% if context.RU %}
-            <button class='lang btn btn-info' id='ru' value='{{ context.RU }}' data-translate="_document_link">Русский</button> 
-            {% else %}
-            <button class='lang btn btn-info' id='ru' disabled>Русский</button> 
-            {% endif %}
             {% if context.AR %}
             <button class='lang btn btn-info' id='ar' value='{{ context.AR }}' data-translate="_document_link">العربية</button> 
             {% else %}
@@ -51,22 +32,72 @@
             {% else %}
             <button class='lang btn btn-info' id='zh' disabled >中文</button>
             {% endif %}
+            {% if context.EN %}
+            <button class='lang btn btn-info' id='en' value='{{ context.EN }}' data-translate="_document_link">English</button> 
+            {% else %}
+            <button class='lang btn btn-info' id='en' disabled>English</button> 
+            {% endif %}
+            {% if context.FR %}
+            <button class='lang btn btn-info' id='fr' value='{{ context.FR }}' data-translate="_document_link">Français</button> 
+            {% else %}
+            <button class='lang btn btn-info' id='fr' disabled>Français</button> 
+            {% endif %}
+            {% if context.RU %}
+            <button class='lang btn btn-info' id='ru' value='{{ context.RU }}' data-translate="_document_link">Русский</button> 
+            {% else %}
+            <button class='lang btn btn-info' id='ru' disabled>Русский</button> 
+            {% endif %}
+            {% if context.ES %}
+            <button class='lang btn btn-info' id='es' value='{{ context.ES }}' data-translate="_document_link">Español</button> 
+            {% else %}
+            <button class='lang btn btn-info' id='es' disabled>Español</button> 
+            {% endif %}
+            {% if context.DE %}
+            <button class='lang btn btn-info' id='de' value='{{ context.DE }}' data-translate="_document_link">Other</button> 
+            {% else %}
+            <button class='lang btn btn-info' id='de' disabled>Other</button> 
+            {% endif %}
+            
+            
+            
             &nbsp;&nbsp;&nbsp;
             <button class="btn-default" id="doc-lang-select">
                 Document Link
             </button>
-            <iframe id='document-frame' src="{{ context.EN }}" width="80%"" height="1200px"></iframe>
+
+            <div>
+                <b>{{ context.metadata.document_symbol }}</b> &nbsp;
+                <button class="btn-default"><a href="{{context.undl}}" style="color:inherit" id="link-lang-select">UNDL Page</a></button>
+            </div>
+
+            {% if context.lang|upper == "EN" %}
+            <iframe id='document-frame' src="{{ context.EN }}" width="95%"" height="1200px"></iframe>
+            {% elif context.lang|upper == "AR" %}
+            <iframe id='document-frame' src="{{ context.AR }}" width="95%"" height="1200px"></iframe>
+            {% elif context.lang|upper == "ZH" %}
+            <iframe id='document-frame' src="{{ context.ZH }}" width="95%"" height="1200px"></iframe>
+            {% elif context.lang|upper == "FR" %}
+            <iframe id='document-frame' src="{{ context.FR }}" width="95%"" height="1200px"></iframe>
+            {% elif context.lang|upper == "RU" %}
+            <iframe id='document-frame' src="{{ context.RU }}" width="95%"" height="1200px"></iframe>
+            {% elif context.lang|upper == "ES" %}
+            <iframe id='document-frame' src="{{ context.ES }}" width="95%"" height="1200px"></iframe>
+            {% else %}
+            <iframe id='document-frame' src="{{ context.EN }}" width="95%"" height="1200px"></iframe>
+            {% endif %}
+
         </div>
+
         <div class="tab-pane" id="metadata">
             <h3>Metadata</h3>  
             <span class="pull-right">
             <button class="btn-xs btn-info" id="all-metadata">All Metadata</button>
             </span>
             <hr>
-            <p><b>Title:</b> {{ context.metadata.title }} <span class="pull-right">
+            <!-- <p><b>Title:</b> {{ context.metadata.title }} <span class="pull-right">
                 <button class="btn-xs btn-warning" id="title">link</button>
-            </span></p>
-            <p><b>Title Statement:</b> {{ context.metadata.title_statement.0 }}
+            </span></p> -->
+            <p><b>Title: </b> {{ context.metadata.title_statement.0 }}
                 <span class="pull-right">
                     <button class="btn-xs btn-warning" id="title_statement">link</button>
                 </span>
@@ -87,11 +118,11 @@
                     <button class="btn-xs btn-warning" id="agenda">link</button>
                 </span>
             </p> -->
-            <p> <b>Authors:</b> {{ context.metadata.author }}
+           <!--  <p> <b>Authors:</b> {{ context.metadata.author }}
                 <span class="pull-right">
                     <button class="btn-xs btn-warning" id="author">link</button>
                 </span>
-            </p>
+            </p> -->
 
             <p><b>Imprint:</b> {{ context.metadata.imprint }}
                 <span class="pull-right">
@@ -155,6 +186,10 @@
                         {% for auth in context.metadata.authority_authors %}
                         <li>{{auth}}</li>
                         {% endfor %}
+                        {% if context.metadata.author %}
+                        <li>{{auth}}</li>
+                        {% endif %}
+
                         <span class="pull-right">
                             <button class="btn-xs btn-warning" id="authority_authors">link</button>
                         </span>

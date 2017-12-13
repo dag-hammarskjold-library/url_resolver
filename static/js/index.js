@@ -1,13 +1,45 @@
 
 /* event listeners for buttons */
 $( document ).ready(function(){
+    var lang = $("div#document_lang").text().trim();
+    
+    switch (lang.toLowerCase()){
+            case "en":
+                setDocumentButtonLang("english");
+                break;
+            case "fr":
+                setDocumentButtonLang('french');
+                break;
+            case "es":
+                setDocumentButtonLang('spanish');
+                break;
+            case 'de':
+                setDocumentButtonLang('german');
+                break;
+            case "ru":
+                setDocumentButtonLang("russian");
+                break;
+            case "ar":
+                setDocumentButtonLang("arabic");
+                break;
+            case "zh":
+                setDocumentButtonLang("chinese");
+                break;
+        }
+
+
     $(".lang").on("click", function() {
         var link = $(this).val();
         var iframe = $('#document-frame');
         iframe.attr('src', link);
-
         var lang = $(this).attr("id");
-        console.log(lang);
+
+        var loc = window.location.href;
+        var locLang = loc.split('?');
+        console.log(locLang);
+        if (locLang.length == 2){
+            history.pushState( {'page': locLang[0]}, lang,  '?lang=' + lang);
+        }
 
         switch (lang){
             case "en":
@@ -90,7 +122,6 @@ $( document ).ready(function(){
 
     $("#document_modal").on("show.bs.modal", function(event){
         $(this).find('h4.modal-title').text("");
-
     });
 
     $("#metadata-xml").on("click", function(){
@@ -99,6 +130,7 @@ $( document ).ready(function(){
         $("#metadata-xml").prop('disabled', true);
         $("#metadata-json").prop('disabled', false)
     });
+
 });
 
 
@@ -117,31 +149,31 @@ function get_document_url(href){
 var dictionary = {
     "english": {
         "_documentlink": "Document Link",
-        "_metadatalink": "Metadata Link"
+        "_undl_link": "UNDL Page"
     },
     "spanish": {
-        "_documentlink" : "Enlace de documento",
-        "_metadatalink": "Metadata Link"
+        "_documentlink" : "Enlace del documento",
+        "_undl_link": "UNDL Página"
     },
     "french": {
-        "_documentlink" : "Lien de document",
-        "_metadatalink": "Metadata Link"
+        "_documentlink" : "Lien du document",
+        "_undl_link": "UNDL Page"
     },
     "german": {
         "_documentlink" : "Dokumentlink",
-        "_metadatalink": "Metadata Link"
+        "_undl_link": "UNDL Seite"
     },
     "russian": {
         "_documentlink": "ссылка документа",
-        "_metadatalink": "Metadata Link"
+        "_undl_link": "UNDL страница"
     },
     "arabic": {
         "_documentlink" : "رابط المستند",
-        "_metadatalink": "Metadata Link"
+        "_undl_link": "صفحة UNDL"
     },
     "chinese": {
         "_documentlink" : "文件链接",
-        "_metadatalink": "Metadata Link"
+        "_undl_link": "UNDL 页"
     }
 };
 
@@ -149,15 +181,16 @@ var dictionary = {
 function setDocumentButtonLang(language){
     if (dictionary.hasOwnProperty(language)) {
         $("#doc-lang-select").html(dictionary[language]["_documentlink"]);
+        $("#link-lang-select").html(dictionary[language]["_undl_link"]);
     }
 };
 
-function setModalLang(language, prop){
-    if(dictionary.hasOwnProperty(language)) {
-        if(prop == "metadata"){
-            $("#modal-lable").text(dictionary[language]["_metadatalink"]);
-        } else {
-            $("#modal-lable").text(dictionary[language]["_documentlink"]);
-        }
-    }
-};
+// function setModalLang(language, prop){
+//     if(dictionary.hasOwnProperty(language)) {
+//         if(prop == "metadata"){
+//             $("#modal-lable").text(dictionary[language]["_metadatalink"]);
+//         } else {
+//             $("#modal-lable").text(dictionary[language]["_documentlink"]);
+//         }
+//     }
+// };

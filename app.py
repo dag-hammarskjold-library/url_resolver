@@ -11,12 +11,17 @@ import ssl
 import xml.etree.ElementTree as ET
 from pymarc import marcxml
 from urllib import parse
+from flask_cors import CORS
 
 base_url = 'https://digitallibrary.un.org'
 ns = '{http://www.loc.gov/MARC21/slim}'
 path = '/search'
 
-subject_re = re.compile(r'^\d{6,7}\s(?:unbis[nt])*\s*(.+)$|^([a-zA-Z ]+)\sunbis[nt]\s\d+$')
+subject_re = re.compile(r"""
+        ^\d{6,7}\s(?:unbis[nt])*\s*(.+)$|
+        ^([a-zA-Z ]+)\sunbis[nt]\s\d+$|
+        ^unbist\s([a-zA-Z ]+)\s\(DHLAUTH\)\d+$|
+        ([a-zA-Z ]+)\sunbist\s\(DHLAUTH\)\d+$""", re.X)
 reldoc_re = re.compile(r'^([a-zA-Z0-9\/]+)(\(\d{4}\))$')
 
 
@@ -64,10 +69,16 @@ class MARCXmlParse:
         for sub in self.record.subjects():
             app.logger.debug("Subject: {}".format(sub.value()))
             m = subject_re.match(sub.value())
+            # kludge!
+            # want cleaner way to show subjects
             if m:
                 s = m.group(1)
                 if not m.group(1):
                     s = m.group(2)
+                    if not m.group(2):
+                        s = m.group(3)
+                        if not m.group(3):
+                            s = m.group(4)
                 if s:
                     search_string = parse.quote_plus(s)
                     query = "f1=subject&as=1&sf=title&so=a&rm=&m1=p&p1={}&ln=en".format(search_string)
@@ -76,6 +87,7 @@ class MARCXmlParse:
         return subjs
 
     def agenda(self):
+        # FIXME -- these are not showing up
         return self.record.agenda()
 
     def notes(self):
@@ -104,9 +116,9 @@ class MARCXmlParse:
             m = reldoc_re.match(rel_doc.value())
             if m:
                 rel_string = m.group(1) + '%20' + m.group(2)
-                docs[rel_doc.value()] = request.url_root + '/symbol/{}'.format(rel_string)
+                docs[rel_doc.value()] = request.url_root + 'symbol/{}'.format(rel_string)
             else:
-                docs[rel_doc.value()] = request.url_root + '/symbol/{}'.format(rel_doc.value())
+                docs[rel_doc.value()] = request.url_root + 'symbol/{}'.format(rel_doc.value())
         return docs
 
     def summary(self):
@@ -122,6 +134,8 @@ class MARCXmlParse:
 
 app = Flask(__name__)
 context = ssl._create_unverified_context()
+# probably do not want this set in production
+cors = CORS(app, resources={r"/metadata/*": {"origins": "*"}})
 
 
 @app.errorhandler(404)
@@ -158,6 +172,7 @@ def index(search_string):
 
     langs = ['EN', 'ES', 'FR', 'DE', 'RU', 'AR', 'ZH']
     ctx = {}
+    ctx['undl'] = "https://digitallibrary.un.org/record/{}?ln=en".format(rec_id)
     ctx['metadata'] = marc_dict
     if language and language.upper() in langs:
         ctx['lang'] = language.upper()
