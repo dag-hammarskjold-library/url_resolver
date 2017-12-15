@@ -13,6 +13,14 @@ import xml.etree.ElementTree as ET
 from pymarc import marcxml
 from urllib import parse
 from flask_cors import CORS
+from .config import DevelopmentConfig
+
+app = Flask(__name__)
+context = ssl._create_unverified_context()
+# probably do not want this set in production
+cors = CORS(app, resources={r"/metadata/*": {"origins": "*"}})
+
+app.config.from_object(DevelopmentConfig)
 
 base_url = 'https://digitallibrary.un.org'
 ns = '{http://www.loc.gov/MARC21/slim}'
@@ -131,12 +139,6 @@ class MARCXmlParse:
     def imprint(self):
         for f in self.record.imprint():
             return f.value()
-
-
-app = Flask(__name__)
-context = ssl._create_unverified_context()
-# probably do not want this set in production
-cors = CORS(app, resources={r"/metadata/*": {"origins": "*"}})
 
 
 @app.errorhandler(404)

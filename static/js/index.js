@@ -148,32 +148,25 @@ function get_document_url(href){
 
 var dictionary = {
     "english": {
-        "_documentlink": "Document Link",
-        "_undl_link": "UNDL Page"
+        "_documentlink": "Document Link"
     },
     "spanish": {
-        "_documentlink" : "Enlace del documento",
-        "_undl_link": "UNDL Página"
+        "_documentlink" : "Enlace del documento"
     },
     "french": {
-        "_documentlink" : "Lien du document",
-        "_undl_link": "UNDL Page"
+        "_documentlink" : "Lien du document"
     },
     "german": {
-        "_documentlink" : "Dokumentlink",
-        "_undl_link": "UNDL Seite"
+        "_documentlink" : "Dokumentlink"
     },
     "russian": {
-        "_documentlink": "ссылка документа",
-        "_undl_link": "UNDL страница"
+        "_documentlink": "ссылка документа"
     },
     "arabic": {
-        "_documentlink" : "رابط المستند",
-        "_undl_link": "صفحة UNDL"
+        "_documentlink" : "رابط المستند"
     },
     "chinese": {
-        "_documentlink" : "文件链接",
-        "_undl_link": "UNDL 页"
+        "_documentlink" : "文件链接"
     }
 };
 
@@ -181,7 +174,6 @@ var dictionary = {
 function setDocumentButtonLang(language){
     if (dictionary.hasOwnProperty(language)) {
         $("#doc-lang-select").html(dictionary[language]["_documentlink"]);
-        $("#link-lang-select").html(dictionary[language]["_undl_link"]);
     }
 };
 

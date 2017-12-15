@@ -66,8 +66,12 @@
             </button>
 
             <div>
-                <b>{{ context.metadata.document_symbol }}</b> &nbsp;
-                <button class="btn-default"><a href="{{context.undl}}" style="color:inherit" id="link-lang-select">UNDL Page</a></button>
+                 &nbsp;
+                <button class="btn-default">
+                    <a href="{{context.undl}}" style="color:inherit" id="link-lang-select">
+                        {{ context.metadata.document_symbol }}
+                    </a>
+                </button>
             </div>
 
             {% if context.lang|upper == "EN" %}
