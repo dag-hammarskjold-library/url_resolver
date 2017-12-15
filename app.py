@@ -170,7 +170,10 @@ def index(search_string):
     urls = _get_pdf_urls(rec_id)
     # no PDFs, redirect to UNDL
     if not urls:
-        return redirect(base_url + "?p={}".format(quote_plus(search_string)))
+        return redirect(base_url +
+            "/search?ln=en&p={}&c=Resource+Type&c=UN+Bodies&fti=0&sf=&so=d&rg=10&sc=0".format(
+                quote_plus(search_string)
+            ))
 
     marc_dict = _get_marc_metadata(rec_id, request)
     language = request.args.get('lang', None)
