@@ -4,6 +4,7 @@ from dict2xml import dict2xml
 from pymarc.field import Field
 from urllib import request as req
 from urllib.parse import quote_plus
+from urllib.error import HTTPError
 from io import BytesIO
 import json
 import re
@@ -167,6 +168,10 @@ def index(search_string):
     """
     rec_id = _get_record_id(search_string)
     urls = _get_pdf_urls(rec_id)
+    # no PDFs, redirect to UNDL
+    if not urls:
+        return redirect(base_url + "?p={}".format(quote_plus(search_string)))
+
     marc_dict = _get_marc_metadata(rec_id, request)
     language = request.args.get('lang', None)
 
@@ -248,7 +253,7 @@ def _get_record_id(search_string):
     root = _fetch_xml_root(url_pattern, search_string)
     elems = root.findall('.//{}controlfield[@tag="001"]'.format(ns))
     if elems == []:
-        app.logger.debug("Could not find a record for {}".format(search_string))
+        app.logger.debug("Trouble parsing xml, {}".format(__name__))
         abort(404)
     try:
         rec_id = elems[0].text
@@ -265,8 +270,8 @@ def _get_pdf_urls(record_id):
     elems = root.findall('.//{0}datafield[@tag="856"]/{0}subfield[@code="u"]'.format(ns))
     urls = []
     if elems == []:
-        app.logger.debug("Could not find a record for {}".format(record_id))
-        abort(404)
+        # redirect to UNDL page
+        return None
     for elem in elems:
         try:
             urls.append(re.sub('http://', 'https://', elem.text))
@@ -278,7 +283,12 @@ def _get_pdf_urls(record_id):
 
 def _fetch_xml_root(url_pattern, param):
     url = base_url + url_pattern.format(param)
-    resp = req.urlopen(url, context=ssl._create_unverified_context())
+    app.logger.debug("Get xml from : {}".format(url))
+    try:
+        resp = req.urlopen(url, context=ssl._create_unverified_context())
+    except HTTPError as e:
+        app.logger.error("Caught HttpError : {}".format(e))
+        abort(404)
     if resp.status != 200:
         app.logger.debug("query {}, gave status: {}".format(url_pattern, resp.status))
         abort(404)
