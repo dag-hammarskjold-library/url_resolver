@@ -108,17 +108,12 @@ class MARCXmlParse:
         S/RES/2049(2012) is a valid symbol
         S/RES/2273(2016) is NOT a valie symbol
         but "S/RES/2273 (2016)" is a valid symbol
-        We want to try both?
+        LEAVE as the user typed it!
         '''
         docs = {}
         for rel_doc in self.record.related_documents():
             app.logger.debug("Related Doc: {}".format(rel_doc.value()))
-            m = reldoc_re.match(rel_doc.value())
-            if m:
-                rel_string = m.group(1) + '%20' + m.group(2)
-                docs[rel_doc.value()] = request.url_root + 'symbol/{}'.format(rel_string)
-            else:
-                docs[rel_doc.value()] = request.url_root + 'symbol/{}'.format(rel_doc.value())
+            docs[rel_doc.value()] = request.url_root + 'prod/symbol/{}'.format(rel_doc.value())
         return docs
 
     def summary(self):
