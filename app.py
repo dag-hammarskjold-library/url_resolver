@@ -16,7 +16,6 @@ from flask_cors import CORS
 base_url = 'https://digitallibrary.un.org'
 ns = '{http://www.loc.gov/MARC21/slim}'
 path = '/search'
-
 subject_re = re.compile(r"""
         ^\d{6,7}\s(?:unbis[nt])*\s*(.+)$|
         ^([a-zA-Z ]+)\sunbis[nt]\s\d+$|
@@ -113,7 +112,8 @@ class MARCXmlParse:
         docs = {}
         for rel_doc in self.record.related_documents():
             app.logger.debug("Related Doc: {}".format(rel_doc.value()))
-            docs[rel_doc.value()] = request.url_root + 'prod/symbol/{}'.format(rel_doc.value())
+            app.logger.debug("Request URL Root: {}".format(request.url_root))
+            docs[rel_doc.value()] = request.url_root + 'symbol/{}'.format(rel_doc.value())
         return docs
 
     def summary(self):
