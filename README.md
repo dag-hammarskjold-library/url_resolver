@@ -5,12 +5,12 @@
 Given a document symbol, append the symbol to the URL, e.g. symbol/A/C.1/72/L.4 or 
 symbol/A/RES/72/29.  The default language is English but the user may add another default:
 
-symbol/A/RES/72/29?lang=ar for Arabic
-symbol/A/RES/72/29?lang=zh for Chinese
-symbol/A/RES/72/29?lang=fr for French
-symbol/A/RES/72/29?lang=ru for Russian
-symbol/A/RES/72/29?lang=es for Spanish
-symbol/A/RES/72/29?lang=de for German
+    symbol/A/RES/72/29?lang=ar for Arabic
+    symbol/A/RES/72/29?lang=zh for Chinese
+    symbol/A/RES/72/29?lang=fr for French
+    symbol/A/RES/72/29?lang=ru for Russian
+    symbol/A/RES/72/29?lang=es for Spanish
+    symbol/A/RES/72/29?lang=de for German
 
 (Please note, not all documents are availble in all languages.)
 
@@ -21,12 +21,12 @@ just right of the language boxes -- this brings up a modal that allows the user 
 paste the link into a seperate tab or window.  Just below the language buttons is
 the document symbol and a link to the UNDL page for that symbol.
 
-Clicking on the Metdata tab brings the user to the most relevant metadata for the document.
+Clicking on the `Metdata` tab brings the user to the most relevant metadata for the document.
 
 Each metadata section (Summary, Agenda, Subjects, etc) has an orange button that opens
 a modal with a link to that section's metadata.
 
-At the top of the page, just below the metadata banner is a blue button for All Metadata.
+At the top of the page, just below the metadata banner is a blue button for `All Metadata`.
 
 The link to the metadata can be copy and pasted into another window or tab.
 
