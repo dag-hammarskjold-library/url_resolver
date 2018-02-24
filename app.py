@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import render_template, abort, redirect, request, Response
+from flask import render_template, abort, request, Response
 from dict2xml import dict2xml
 from pymarc.field import Field
 from urllib import request as req
@@ -140,9 +140,12 @@ def page_not_found(e):
 
 
 @app.route('/')
-def redirect_to_symbol():
-    # pick a General Assembly resolution -- like A/RES/52/115
-    return redirect('/symbol/A/RES/45/110')
+# def redirect_to_symbol():
+#     # pick a General Assembly resolution -- like A/RES/52/115
+#     return redirect('/symbol/A/RES/45/110')
+def home():
+    ctx = {"root": request.url_root}
+    return render_template('home.html', context=ctx)
 
 
 @app.route('/symbol', defaults={'path': ''})
