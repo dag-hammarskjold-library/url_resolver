@@ -2,7 +2,7 @@
     "dev": {
         "app_function": "app.app",
         "aws_region": "us-east-1",
-        "profile_name": "default",
+        "profile_name": "undl-serverless",
         "project_name": "url-resolver",
         "runtime": "python3.6",
         "s3_bucket": "zappa-j2ith0vcq"
@@ -10,7 +10,7 @@
     "prod": {
         "app_function": "app.app",
         "aws_region": "us-east-1",
-        "profile_name": "default",
+        "profile_name": "undl-serverless",
         "project_name": "url-resolver",
         "runtime": "python3.6",
         "s3_bucket": "zappa-j2ith0vcq"
