@@ -1,0 +1,19 @@
+{% extends "base.html" %} {% block content %}
+
+{% if context.lang|upper == "EN" %}
+<iframe id='document-frame' src="{{ context.EN }}" width="95%" height="1200px"></iframe>
+{% elif context.lang|upper == "AR" %}
+<iframe id='document-frame' src="{{ context.AR }}" width="95%" height="1200px"></iframe>
+{% elif context.lang|upper == "ZH" %}
+<iframe id='document-frame' src="{{ context.ZH }}" width="95%" height="1200px"></iframe>
+{% elif context.lang|upper == "FR" %}
+<iframe id='document-frame' src="{{ context.FR }}" width="95%" height="1200px"></iframe>
+{% elif context.lang|upper == "RU" %}
+<iframe id='document-frame' src="{{ context.RU }}" width="95%" height="1200px"></iframe>
+{% elif context.lang|upper == "ES" %}
+<iframe id='document-frame' src="{{ context.ES }}" width="95%" height="1200px"></iframe>
+{% else %}
+<iframe id='document-frame' src="{{ context.EN }}" width="95%" height="1200px"></iframe>
+{% endif %}
+
+{% endblock %}
