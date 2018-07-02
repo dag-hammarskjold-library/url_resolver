@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import render_template, abort, request, Response
+from flask import render_template, abort, request, redirect, Response
 from dict2xml import dict2xml
 from pymarc.field import Field
 from urllib import request as req
@@ -139,6 +139,11 @@ def page_not_found(e):
     return render_template('404.html'), 404
 
 
+@app.errorhandler(500)
+def internal_error(e):
+    return render_template('500.html'), 500
+
+
 @app.route('/')
 # def redirect_to_symbol():
 #     # pick a General Assembly resolution -- like A/RES/52/115
@@ -166,7 +171,13 @@ def index(search_string):
     rec_id = _get_record_id(search_string)
     urls = _get_pdf_urls(rec_id)
     marc_dict = _get_marc_metadata(rec_id, request)
-    language = request.args.get('lang', None)
+    language = request.args.get('lang', 'EN')
+    rest = request.args.get('rest', None)
+    file = request.args.get('file', None)
+
+    if rest and file:
+        app.logger.error("Tried to get JSON and a File download in one go")
+        abort(500)
 
     langs = ['EN', 'ES', 'FR', 'DE', 'RU', 'AR', 'ZH']
     ctx = {}
@@ -174,10 +185,22 @@ def index(search_string):
     ctx['metadata'] = marc_dict
     if language and language.upper() in langs:
         ctx['lang'] = language.upper()
-    for url in urls:
-        for lang in langs:
-            if re.search('-{}\.pdf'.format(lang), url):
-                ctx[lang] = url
+    if not rest:
+        for url in urls:
+            for lang in langs:
+                if re.search('-{}\.pdf'.format(lang), url):
+                    ctx[lang] = url
+    else:
+        for url in urls:
+            if re.search('-{}\.pdf'.format(language.upper()), url):
+                ctx[language.upper()] = url
+
+    if rest:
+        return Response(json.dumps(ctx, sort_keys=True, indent=2, separators=(',', ': ')),
+            content_type='application/json')
+
+    if file and language:
+        return redirect(ctx[language.upper()])
 
     return render_template('index.html', context=ctx)
 
@@ -246,12 +269,12 @@ def _get_record_id(search_string):
     root = _fetch_xml_root(url_pattern, search_string)
     elems = root.findall('.//{}controlfield[@tag="001"]'.format(ns))
     if elems == []:
-        app.logger.debug("Could not find a record for {}".format(search_string))
+        app.logger.error("Could not find a record for {}".format(search_string))
         abort(404)
     try:
         rec_id = elems[0].text
     except IndexError as e:
-        app.logger.debug("Caught Exception in {}, {}".format(__name__, e))
+        app.logger.error("Caught Exception in {}, {}".format(__name__, e))
         abort(404)
 
     return rec_id
@@ -263,7 +286,7 @@ def _get_pdf_urls(record_id):
     elems = root.findall('.//{0}datafield[@tag="856"]/{0}subfield[@code="u"]'.format(ns))
     urls = []
     if elems == []:
-        app.logger.debug("Could not find a record for {}".format(record_id))
+        app.logger.error("Could not find a record for {}".format(record_id))
         abort(404)
     for elem in elems:
         try:
@@ -286,6 +309,7 @@ def _fetch_xml_root(url_pattern, param):
         abort(404)
     root = ET.fromstring(xml)
     return root
+
 
 if __name__ == '__main__':
     app.run(debug=True)
