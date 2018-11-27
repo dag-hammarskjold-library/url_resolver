@@ -44,7 +44,14 @@ class MARCXmlParse:
             related documents
     '''
     def __init__(self, url):
-        resp = req.urlopen(url, context=ssl._create_unverified_context())
+        r = req.Request (
+            url,
+            data=None,
+            headers={
+                'User-Agent':"Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11"
+            }
+        )
+        resp = req.urlopen(r, context=ssl._create_unverified_context())
         if resp.status != 200:
             raise PageNotFoundException("Could not get data from {}".format(url))
         self.xml_doc = BytesIO(resp.read())
@@ -299,7 +306,14 @@ def _get_pdf_urls(record_id):
 
 def _fetch_xml_root(url_pattern, param):
     url = base_url + url_pattern.format(param)
-    resp = req.urlopen(url, context=ssl._create_unverified_context())
+    r = req.Request (
+        url,
+        data=None,
+        headers={
+            'User-Agent':"Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11"
+        }
+    )
+    resp = req.urlopen(r, context=ssl._create_unverified_context())
     if resp.status != 200:
         app.logger.debug("query {}, gave status: {}".format(url_pattern, resp.status))
         abort(404)
