@@ -268,7 +268,7 @@ def _get_record_id(search_string):
     # https://github.com/dag-hammarskjold-library/pymarc/tree/dev
     search_string = quote_plus(search_string)
     path = '/search'
-    query = "ln=en&p=191__a:\"{}\"&c=Resource+Type&c=UN+Bodies&fti=0&so=d&rg=10&sc=0&of=xm".format(search_string)
+    query = "ln=en&p=191__a:[{}]&c=Resource+Type&c=UN+Bodies&fti=0&so=d&rg=10&sc=0&of=xm".format(search_string)
     app.logger.info("!! {}".format(search_string))
     app.logger.info("$$ {}".format(query))
 
